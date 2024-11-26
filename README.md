@@ -1,8 +1,8 @@
-# Starter folder
+# Toronto healthcare outbreak predictiion
 
 ## Overview
 
-This repo provides students with a foundation for their own projects associated with *Telling Stories with Data*. You do not need every aspect for every paper and you should delete aspects that you do not need.
+This repo aims to predict the healthcare outbreak for 2025 in Toronto based on the dataset of 2024.
 
 
 ## File Structure
