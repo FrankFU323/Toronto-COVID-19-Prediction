@@ -1,0 +1,201 @@
+institution_address,outbreak_setting,type_of_outbreak,causative_agent_1,date_outbreak_began,active
+160 Wellesley St E,Retirement Home,Other,COVID-19,2024-10-28,N
+3276 St. Clair Ave East,LTCH,Other,COVID-19,2024-12-13,Y
+187 Wynford Dr,Hospital-Acute Care,Other,Rhinovirus,2024-03-01,Y
+2111 Finch Ave,Hospital-Acute Care,Enteric,Rhinovirus,2024-02-03,Y
+30 The Queensway,Transitional Care,Respiratory,Parainfluenza,2024-12-22,Y
+305 Cummer Ave,Hospital-Acute Care,Other,Parainfluenza,2024-11-14,Y
+340 McCowan Rd,Retirement Home,Enteric,COVID-19,2024-07-16,Y
+36 D'Arcy St,Retirement Home,Enteric,Coronavirus*,2024-06-27,Y
+25 Brunswick Ave,Hospital-Chronic Care,Other,Coronavirus*,2024-02-25,N
+866 Sheppard Ave W,LTCH,Enteric,COVID-19,2024-05-03,Y
+1020 Mcnicoll Ave,Retirement Home,Enteric,COVID-19,2024-06-14,N
+60 Guildwood Pky,LTCH,Other,COVID-19,2024-02-04,N
+150 Dunn Ave,Transitional Care,Respiratory,COVID-19,2024-04-15,Y
+3758 Sheppard Ave E,Transitional Care,Respiratory,Coronavirus*,2024-09-02,N
+305 Cummer Ave,Retirement Home,Enteric,Rhinovirus,2024-01-08,N
+187 Wynford Dr,Hospital-Acute Care,Respiratory,Parainfluenza,2024-11-18,N
+155 Millwood Rd,Hospital-Psychiatric,Other,COVID-19,2024-06-03,Y
+187 Wynford Dr,Retirement Home,Enteric,Coronavirus*,2024-04-05,Y
+1925 Steeles Ave,LTCH,Respiratory,Coronavirus*,2024-04-22,Y
+111 Avenue Rd,Transitional Care,Enteric,COVID-19,2024-04-04,Y
+140 Sherway Drive,LTCH,Enteric,Parainfluenza,2024-05-24,Y
+55 Ameer Ave,Hospital-Psychiatric,Respiratory,Parainfluenza,2024-08-17,Y
+3830 Lawren Ave E,Transitional Care,Enteric,COVID-19,2024-11-06,Y
+600 Melita Cres,Hospital-Psychiatric,Respiratory,Parainfluenza,2024-12-23,N
+225 St. George St,Hospital-Acute Care,Enteric,COVID-19,2024-04-08,N
+111 Ave Rd,LTCH,Other,Coronavirus*,2024-05-15,Y
+52 Neilson Drive,Hospital-Psychiatric,Enteric,Parainfluenza,2024-03-13,N
+2311 Mcnicoll Ave,Hospital-Psychiatric,Other,Coronavirus*,2024-07-23,N
+1 Kenton Dr,Retirement Home,Respiratory,COVID-19,2024-10-16,N
+8 The Donway E,Transitional Care,Enteric,Rhinovirus,2024-07-26,N
+180 Sheridan Ave,Hospital-Psychiatric,Other,Rhinovirus,2024-04-16,N
+55 Ameer Ave,Hospital-Acute Care,Other,Coronavirus*,2024-12-13,Y
+200 Dawes Rd,Hospital-Chronic Care,Other,Coronavirus*,2024-08-09,Y
+345 Sherbourne St,Transitional Care,Enteric,Parainfluenza,2024-04-21,N
+Morgan Dr,Hospital-Psychiatric,Enteric,COVID-19,2024-01-22,Y
+225 St. George St,Hospital-Acute Care,Respiratory,Rhinovirus,2024-09-23,Y
+3555 Danforth Ave,Hospital-Chronic Care,Respiratory,Rhinovirus,2024-10-25,N
+537 Finch Ave W,Hospital-Psychiatric,Respiratory,COVID-19,2024-09-29,N
+645 Castlefield Ave,LTCH,Other,Coronavirus*,2024-08-03,N
+2920 Lawrence Ave E,Transitional Care,Enteric,COVID-19,2024-11-27,N
+225 St George St,Retirement Home,Other,Parainfluenza,2024-07-05,Y
+2111 Finch Ave,Hospital-Acute Care,Enteric,Coronavirus*,2024-05-12,Y
+5 Resurrection Dr,Hospital-Chronic Care,Enteric,COVID-19,2024-11-04,Y
+400 The West Mall,Hospital-Psychiatric,Other,Coronavirus*,2024-05-13,N
+550 Cummer Ave,Hospital-Chronic Care,Enteric,Parainfluenza,2024-12-24,Y
+200 Elizabeth St,Transitional Care,Respiratory,COVID-19,2024-01-18,N
+5935 Bathurst St,Transitional Care,Respiratory,COVID-19,2024-06-25,Y
+866 Sheppard Ave W,Hospital-Chronic Care,Enteric,Coronavirus*,2024-06-10,Y
+1 Northwestern Ave,Retirement Home,Enteric,COVID-19,2024-05-09,Y
+2111 Finch Ave W,Hospital-Psychiatric,Other,Coronavirus*,2024-07-08,Y
+1 Overland Dr,Hospital-Psychiatric,Enteric,COVID-19,2024-06-09,N
+4650 Eglinton Ave W,Hospital-Acute Care,Respiratory,Coronavirus*,2024-01-13,N
+40 Bell Estate Rd,Transitional Care,Other,COVID-19,2024-03-21,Y
+1035 Eglinton Ave W,Hospital-Acute Care,Respiratory,Parainfluenza,2024-11-06,Y
+5 Resurrection Dr,Transitional Care,Enteric,Rhinovirus,2024-08-15,Y
+5935 Bathurst St,Hospital-Acute Care,Respiratory,Coronavirus*,2024-08-25,Y
+2701 St Claire Ave E,Retirement Home,Other,Rhinovirus,2024-01-09,Y
+82 Buttowood Ave,Hospital-Acute Care,Respiratory,Coronavirus*,2024-01-08,N
+130 Midland Ave,Retirement Home,Other,Rhinovirus,2024-08-02,Y
+130 Dunn Ave,Hospital-Acute Care,Respiratory,Coronavirus*,2024-02-06,Y
+200 Church St,Hospital-Chronic Care,Respiratory,Parainfluenza,2024-03-11,Y
+221 Milner Ave,LTCH,Respiratory,Coronavirus*,2024-05-25,N
+82 Buttowood Ave,Transitional Care,Respiratory,COVID-19,2024-03-31,Y
+1145 Albion Rd,Transitional Care,Respiratory,Parainfluenza,2024-12-03,Y
+35 Elm Grove Ave,LTCH,Respiratory,Coronavirus*,2024-11-20,Y
+265 Queens Dr,Retirement Home,Respiratory,COVID-19,2024-07-14,Y
+2045 Finch Ave W,Retirement Home,Respiratory,Parainfluenza,2024-05-13,Y
+4650 Eglinton Ave W,Transitional Care,Respiratory,Rhinovirus,2024-03-18,Y
+707 Ellesmere Rd,Hospital-Acute Care,Respiratory,COVID-19,2024-10-05,Y
+52 Neilson Drive,Hospital-Acute Care,Other,Parainfluenza,2024-05-10,N
+5935 Bathurst St,Hospital-Acute Care,Other,Parainfluenza,2024-07-17,N
+14 Cross St,Transitional Care,Enteric,COVID-19,2024-08-25,Y
+537 Finch Ave W,LTCH,Respiratory,Coronavirus*,2024-08-19,N
+306 Finch Ave,LTCH,Respiratory,Coronavirus*,2024-12-15,N
+14 Cross St,Retirement Home,Respiratory,Coronavirus*,2024-02-16,N
+303 Queens Dr,Transitional Care,Other,Rhinovirus,2024-08-18,N
+551 Collins Rd,LTCH,Other,Parainfluenza,2024-01-31,N
+2245 Lawrence Ave West,Hospital-Acute Care,Respiratory,Rhinovirus,2024-10-14,N
+19 Rean Dr,LTCH,Respiratory,COVID-19,2024-04-07,N
+101 Humber College Blvd,Hospital-Acute Care,Other,Rhinovirus,2024-04-25,Y
+707 Ellesmere Rd,Hospital-Acute Care,Enteric,Coronavirus*,2024-07-06,N
+600 University Ave,Retirement Home,Enteric,Rhinovirus,2024-09-20,Y
+2881 Eglinton Ave,Hospital-Chronic Care,Respiratory,Coronavirus*,2024-04-05,N
+866 Sheppard Ave W,Hospital-Acute Care,Enteric,Rhinovirus,2024-10-23,Y
+767 Royal York Rd,Hospital-Chronic Care,Other,Rhinovirus,2024-12-25,Y
+140 Sherway Drive,Hospital-Psychiatric,Respiratory,Parainfluenza,2024-04-05,Y
+3760 Sheppard Ave E,LTCH,Enteric,Parainfluenza,2024-03-29,N
+718 Sheppard Ave,LTCH,Respiratory,Rhinovirus,2024-07-14,Y
+305 Billiol St,Hospital-Chronic Care,Enteric,Rhinovirus,2024-12-09,N
+2100 Bloor St W,Transitional Care,Respiratory,COVID-19,2024-06-17,Y
+30 The Queensway,Hospital-Acute Care,Respiratory,Rhinovirus,2024-09-18,N
+2005 Lawrence Ave,LTCH,Respiratory,Coronavirus*,2024-11-17,Y
+3275 St Clair Ave E,LTCH,Respiratory,Parainfluenza,2024-10-06,Y
+2075 Bayview Ave,Hospital-Psychiatric,Other,Coronavirus*,2024-09-30,N
+147 Elder St,Transitional Care,Other,Parainfluenza,2024-07-09,Y
+5 Resurrection Rd,Hospital-Psychiatric,Other,Parainfluenza,2024-10-04,N
+40 Old Kingston Rd,Hospital-Acute Care,Respiratory,COVID-19,2024-02-06,N
+102 Craiglee Dr,LTCH,Respiratory,Parainfluenza,2024-11-05,N
+495 The West Mall,Hospital-Chronic Care,Respiratory,Parainfluenza,2024-07-27,Y
+555 Finch Ave W,Hospital-Psychiatric,Enteric,Coronavirus*,2024-03-24,N
+30 The Queensway,Hospital-Psychiatric,Respiratory,Parainfluenza,2024-01-12,N
+1340 York Mills Rd,Hospital-Psychiatric,Other,Rhinovirus,2024-09-02,N
+4180 Dundas St W,Retirement Home,Enteric,Coronavirus*,2024-07-26,Y
+2920 Lawrence Ave W,Hospital-Acute Care,Enteric,Rhinovirus,2024-02-06,N
+1 Overland Dr,Transitional Care,Other,Parainfluenza,2024-08-25,N
+19 Rean Dr,Hospital-Psychiatric,Other,Parainfluenza,2024-06-11,Y
+1 Kenton Pl,Hospital-Psychiatric,Other,Coronavirus*,2024-11-19,Y
+2920 Lawrence Ave E,Transitional Care,Other,Rhinovirus,2024-02-25,Y
+1-3 Kenton Dr,Hospital-Psychiatric,Other,Coronavirus*,2024-01-12,Y
+3015 Lawrence Ave E,Hospital-Chronic Care,Respiratory,Parainfluenza,2024-06-19,Y
+2121 Kingston Rd,Hospital-Psychiatric,Other,Coronavirus*,2024-06-22,Y
+2005 Lawrence Ave W,Hospital-Chronic Care,Enteric,Coronavirus*,2024-09-13,N
+225 St. George St,Retirement Home,Enteric,Coronavirus*,2024-07-06,N
+265 Queens Dr,Retirement Home,Other,Parainfluenza,2024-06-21,N
+147 Elder St,Hospital-Chronic Care,Other,Parainfluenza,2024-08-30,Y
+520 Markham Rd,Retirement Home,Enteric,Parainfluenza,2024-03-30,N
+8 The Donway E,Hospital-Psychiatric,Enteric,Parainfluenza,2024-06-12,Y
+767 Royal York Rd,LTCH,Respiratory,Parainfluenza,2024-12-27,Y
+3030 Birchmount Rd,LTCH,Other,Rhinovirus,2024-10-10,N
+550 Cummer Ave,Transitional Care,Other,Rhinovirus,2024-12-22,N
+2111 Finch Ave,Hospital-Chronic Care,Other,Parainfluenza,2024-10-20,Y
+2121 Kingston Rd,LTCH,Enteric,COVID-19,2024-02-16,Y
+102 Craiglee Dr,Hospital-Acute Care,Respiratory,Coronavirus*,2024-03-19,Y
+40 Bell Estate Rd,Retirement Home,Enteric,COVID-19,2024-03-26,Y
+5935 Bathurst St,Hospital-Chronic Care,Enteric,Parainfluenza,2024-08-18,Y
+685 Finch Ave W,Hospital-Chronic Care,Enteric,Rhinovirus,2024-04-06,Y
+59 Lawson Rd,Hospital-Psychiatric,Enteric,Rhinovirus,2024-03-15,N
+30 The Queensway,Hospital-Psychiatric,Enteric,Coronavirus*,2024-03-31,N
+33 Christie St,Hospital-Chronic Care,Respiratory,Parainfluenza,2024-06-11,Y
+2005 Lawrence Ave W,Retirement Home,Enteric,COVID-19,2024-10-25,Y
+500 Kingston Rd,LTCH,Respiratory,Coronavirus*,2024-03-26,Y
+345 Sherbourne St,Hospital-Psychiatric,Other,Rhinovirus,2024-12-13,Y
+2601 Bayview Ave,Transitional Care,Other,Parainfluenza,2024-06-27,N
+40 Playfair Ave,Hospital-Psychiatric,Respiratory,Coronavirus*,2024-05-14,N
+1 Kenton Pl,Retirement Home,Other,COVID-19,2024-01-11,N
+225 St. George St,Retirement Home,Enteric,COVID-19,2024-01-21,N
+1800 O'Connor Dr,Retirement Home,Enteric,Parainfluenza,2024-10-14,N
+3760 Sheppard Ave E,Hospital-Chronic Care,Respiratory,Parainfluenza,2024-05-14,N
+5935 Bathurst St,Hospital-Psychiatric,Other,COVID-19,2024-11-22,Y
+5935 Bathurst St,LTCH,Enteric,Coronavirus*,2024-03-07,N
+200 Church St,Retirement Home,Respiratory,Parainfluenza,2024-12-14,N
+707 Ellesmere Rd,Transitional Care,Other,Parainfluenza,2024-09-15,N
+306 Finch Ave E,Hospital-Psychiatric,Respiratory,COVID-19,2024-06-25,Y
+420 The East Mall,LTCH,Respiratory,Rhinovirus,2024-06-13,N
+34 Middleport Cres,Hospital-Chronic Care,Enteric,COVID-19,2024-12-04,N
+30 Bond St,Hospital-Psychiatric,Respiratory,Parainfluenza,2024-10-21,Y
+25 Brunswick Ave,Transitional Care,Respiratory,Rhinovirus,2024-04-09,Y
+685 Finch Ave W,LTCH,Respiratory,Coronavirus*,2024-02-29,N
+1035 Eglinton Ave W,Hospital-Psychiatric,Enteric,Rhinovirus,2024-08-25,N
+1035 Eglinton Ave W,Transitional Care,Respiratory,Coronavirus*,2024-07-06,N
+1020 McNicoll Ave,Hospital-Psychiatric,Respiratory,Coronavirus*,2024-08-30,Y
+150 Emmett Ave,Hospital-Acute Care,Other,Rhinovirus,2024-11-18,N
+1020 Mcnicoll Ave,Retirement Home,Respiratory,Coronavirus*,2024-10-07,N
+551 Collins Rd,Hospital-Acute Care,Other,Parainfluenza,2024-01-23,N
+2111 Finch Ave W,Transitional Care,Respiratory,COVID-19,2024-05-29,N
+33 Christie St,LTCH,Enteric,Coronavirus*,2024-10-22,Y
+3275 St Clair Ave E,LTCH,Enteric,Coronavirus*,2024-02-04,N
+36 D'Arcy St,Retirement Home,Respiratory,COVID-19,2024-05-21,N
+60 Scoffield Dr,Hospital-Chronic Care,Other,Parainfluenza,2024-10-21,Y
+150 Dunn Ave,LTCH,Respiratory,Coronavirus*,2024-02-24,Y
+52 Neilson Drive,Retirement Home,Enteric,COVID-19,2024-05-28,N
+65 Livingston Rd,Hospital-Psychiatric,Other,Parainfluenza,2024-03-12,N
+2100 Bloor St W,Retirement Home,Respiratory,Rhinovirus,2024-06-05,N
+10 Senlac Rd,Transitional Care,Respiratory,COVID-19,2024-06-11,Y
+1 Kenton Pl,Hospital-Acute Care,Respiratory,COVID-19,2024-06-14,Y
+351 Christie St,Hospital-Chronic Care,Other,Rhinovirus,2024-09-25,Y
+740 Pape Ave,Hospital-Psychiatric,Other,COVID-19,2024-05-23,N
+10 Senlac Rd,Hospital-Acute Care,Other,Coronavirus*,2024-05-14,N
+150 Sherway Drive,Hospital-Acute Care,Other,Coronavirus*,2024-10-09,N
+5 Resurrection Rd,Retirement Home,Other,COVID-19,2024-07-09,Y
+4180 Dundas St W,Hospital-Psychiatric,Other,Coronavirus*,2024-01-09,Y
+740 Pape Ave,Transitional Care,Other,COVID-19,2024-10-28,N
+2411 Lawrence Ave E,Retirement Home,Other,Rhinovirus,2024-09-14,Y
+82 Buttonwood Ave,Hospital-Acute Care,Other,Coronavirus*,2024-08-06,N
+450 Rustic Rd,Retirement Home,Other,COVID-19,2024-10-03,N
+4001 Leslie Mall,LTCH,Respiratory,COVID-19,2024-04-23,N
+600 University Ave,LTCH,Enteric,Parainfluenza,2024-09-29,Y
+610 University Ave,LTCH,Enteric,Rhinovirus,2024-08-18,Y
+4 Teddington Park Ave,Transitional Care,Respiratory,COVID-19,2024-05-08,N
+306 Finch Ave,LTCH,Other,Rhinovirus,2024-03-10,N
+718 Sheppard Ave,Hospital-Psychiatric,Other,Parainfluenza,2024-01-24,Y
+555 Finch Ave W,Hospital-Acute Care,Enteric,Coronavirus*,2024-01-07,N
+25 Brunswick Ave,LTCH,Respiratory,Coronavirus*,2024-03-27,Y
+2245 Lawrence Ave W,LTCH,Enteric,Parainfluenza,2024-02-07,Y
+541 Finch Ave W,LTCH,Respiratory,Rhinovirus,2024-12-03,Y
+303 Queens Dr,Transitional Care,Enteric,Parainfluenza,2024-01-09,N
+10 Senlac Rd,Transitional Care,Enteric,COVID-19,2024-08-26,N
+45 Brunswick Ave,Hospital-Psychiatric,Respiratory,Coronavirus*,2024-08-15,Y
+60 Richview Rd,LTCH,Other,Rhinovirus,2024-04-11,Y
+1035 Eglinton Ave W,Retirement Home,Other,Parainfluenza,2024-03-08,N
+2701 St Claire Ave E,Hospital-Chronic Care,Respiratory,COVID-19,2024-05-11,N
+5351 Yonge St,LTCH,Other,Rhinovirus,2024-08-31,Y
+3276 St Clair Ave E,Hospital-Psychiatric,Enteric,Coronavirus*,2024-07-04,N
+60 Guildwood Pky,Transitional Care,Respiratory,Parainfluenza,2024-04-18,N
+3555 Danforth Ave,Transitional Care,Other,Rhinovirus,2024-11-25,N
+3760 Sheppard Ave East,Hospital-Psychiatric,Respiratory,COVID-19,2024-03-09,N
+200 Dawes Rd,Retirement Home,Respiratory,Rhinovirus,2024-11-16,Y
+160 Wellesley St E,LTCH,Other,Coronavirus*,2024-09-22,N
+300 Silver Star Blvd,LTCH,Respiratory,Parainfluenza,2024-08-26,Y
+160 Wellesley St E,Hospital-Psychiatric,Respiratory,COVID-19,2024-03-30,N
