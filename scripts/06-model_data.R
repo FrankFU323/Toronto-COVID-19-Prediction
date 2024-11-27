@@ -1,60 +1,123 @@
 #### Preamble ####
-# Purpose: Models... [...UPDATE THIS...]
-# Author: Rohan Alexander [...UPDATE THIS...]
-# Date: 11 February 2023 [...UPDATE THIS...]
-# Contact: rohan.alexander@utoronto.ca [...UPDATE THIS...]
+# Purpose: Model the cleaned dataset and choose one from them
+# Author: Tianrui Fu
+# Date: 26 November 2024
+# Contact: tianrui.fu@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: [...UPDATE THIS...]
-# Any other information needed? [...UPDATE THIS...]
+# Pre-requisites: None
+# Any other information needed? None
 
 
 #### Workspace setup ####
 library(tidyverse)
 library(rstanarm)
+library(ggplot2)
 
 #### Read data ####
 data <- read_parquet("data/02-analysis_data/analysis_data_cleaned.parquet")
 
 ### Model data ####
-# The first model
-poisson_model_1 <- glm(count ~ institution_address, family = poisson(), data = data)
+# Use Poisson Model
+library(dplyr)
 
-# Add one more variable
-poisson_model_2 <- glm(count ~ institution_address + outbreak_setting, family = poisson(), data = data)
+# Transfer count of date to month 
+data$month <- as.numeric(format(as.Date(data$date_outbreak_began), "%m"))
+data$season <- case_when(
+  data$month %in% c(12, 1, 2) ~ "Winter",
+  data$month %in% c(3, 4, 5) ~ "Spring",
+  data$month %in% c(6, 7, 8) ~ "Summer",
+  data$month %in% c(9, 10, 11) ~ "Fall"
+)
 
-# Add all the variable
-poisson_model_3 <- glm(count ~ institution_address + outbreak_setting + date_outbreak_began, family = poisson(), data = data)
+# Create a dataset which has count each causative agent
+count_data <- data %>%
+  group_by(causative_agent_1, season, month, outbreak_setting) %>%
+  summarise(outbreak_count = n(), .groups = "drop")
 
-# check the model AIC to choose
-AIC(poisson_model_1, poisson_model_2, poisson_model_3)
+# Poisson Model creation
+poisson_model <- glm(outbreak_count ~ causative_agent_1 + season, 
+                     family = poisson(link = "log"), 
+                     data = count_data)
+summary(poisson_model)
 
-fitted_values <- fitted(poisson_model_3)
-residuals_values <- residuals(poisson_model_3)
+# Test the dispersion
+library(AER)
+dispersiontest(poisson_model)
 
-# 绘制拟合值与残差的散点图
-plot(fitted_values, residuals_values, 
-     main = "Residuals vs Fitted Values", 
-     xlab = "Fitted Values", 
-     ylab = "Residuals")
-abline(h = 0, col = "red")
+# Create the new poisson model 
+poisson_model_updated <- glm(outbreak_count ~ causative_agent_1 + outbreak_setting, 
+                             family = poisson(link = "log"), 
+                             data = count_data)
+summary(poisson_model_updated)
 
-# 使用训练数据的实际值和预测值来比较
-actual_counts <- cleaned_data$count
-predicted_counts <- fitted(poisson_model_3)
+poisson_model_outbreak_season <- glm(outbreak_count ~ causative_agent_1 + season + outbreak_setting, 
+                          family = poisson(link = "log"), 
+                          data = count_data)
+summary(poisson_model_outbreak_season)
 
-# 绘制预测值与实际值的散点图
-ggplot(data.frame(actual = actual_counts, predicted = predicted_counts), aes(x = actual, y = predicted)) +
-  geom_point() +
-  geom_abline(slope = 1, intercept = 0, color = "red") +
-  labs(title = "Actual vs Predicted Counts", x = "Actual Counts", y = "Predicted Counts")
+poisson_model_outbreak_month <- glm(outbreak_count ~ causative_agent_1 + month + outbreak_setting, 
+                              family = poisson(link = "log"), 
+                              data = count_data)
+summary(poisson_model_outbreak_month)
 
-qqnorm(residuals(poisson_model_3))
-qqline(residuals(poisson_model_3), col = "red")
+# Create the interaction poisson model
+poisson_interaction_month_model <- glm(outbreak_count ~ causative_agent_1 * month + outbreak_setting, 
+                                 family = poisson(link = "log"), 
+                                 data = count_data)
+summary(poisson_interaction_month_model)
+
+poisson_season_time <- glm(outbreak_count ~ causative_agent_1 + month * season + outbreak_setting, 
+                           family = poisson(link = "log"), data = count_data)
+summary(poisson_season_time)
+
+poisson_interaction_season_model <- glm(outbreak_count ~ causative_agent_1 * season + outbreak_setting, 
+                                 family = poisson(link = "log"), 
+                                 data = count_data)
+summary(poisson_interaction_season_model)
+
+# Choose the final model and plot the interaction poisson model 
+count_data$predicted <- predict(poisson_season_time, type = "response")
+
+ggplot(count_data, aes(x = month, y = predicted, color = causative_agent_1)) +
+  geom_line() +
+  facet_wrap(~ causative_agent_1, scales = "free_y") +
+  labs(title = "Predicted Outbreak Frequency by Pathogen and Month",
+       x = "Month", y = "Predicted Outbreak Count") +
+  geom_smooth(method = "loess", se = FALSE)
+
 
 #### Save model ####
 saveRDS(
-  first_model,
-  file = "models/first_model.rds"
+  poisson_model,
+  file = "models/poisson_model.rds"
 )
 
+saveRDS(
+  poisson_model_updated,
+  file = "models/poisson_model_updated.rds"
+)
 
+saveRDS(
+  poisson_model_outbreak_month,
+  file = "models/poisson_model_outbreak_month.rds"
+)
+
+saveRDS(
+  poisson_model_outbreak_season,
+  file = "models/poisson_model_outbreak_season.rds"
+)
+
+saveRDS(
+  poisson_interaction_month_model,
+  file = "models/poisson_interaction_month_model.rds"
+)
+
+saveRDS(
+  poisson_season_time,
+  file = "models/poisson_season_time.rds"
+)
+
+saveRDS(
+  poisson_interaction_season_model,
+  file = "models/poisson_interaction_season_model.rds"
+)
