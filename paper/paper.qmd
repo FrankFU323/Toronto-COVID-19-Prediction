@@ -1,16 +1,16 @@
 ---
-title: "My title"
-subtitle: "My subtitle if needed"
+title: "Modeling Outbreak Frequency by Season and Pathogen: Insights and Predictions for 2025"
+subtitle: "Seasonal Patterns and Stable COVID-19 Outbreaks Across Healthcare Settings"
 author: 
-  - First author
-  - Another author
-thanks: "Code and data are available at: [https://github.com/RohanAlexander/starter_folder](https://github.com/RohanAlexander/starter_folder)."
+  - Tianrui Fu
+thanks: "Code and data are available at: [https://github.com/FrankFU323/Toronto-Healthcare-outbreak-trends.git](https://github.com/FrankFU323/Toronto-Healthcare-outbreak-trends.git)."
 date: today
 date-format: long
-abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
+abstract: "We analyze the outbreak dynamics of respiratory pathogens in Toronto’s healthcare settings, focusing on seasonal trends, pathogen-specific patterns, and predictive modeling. Using Poisson regression on historical data, we find COVID-19 dominates outbreak frequencies, with summer months showing peaks across most pathogens and lower activity in winter. Predictions for 2025 indicate similar seasonal patterns, reinforcing the importance of seasonally adjusted preparedness measures. These results highlight the need for strategic resource allocation to mitigate the burden of outbreaks while ensuring healthcare systems remain resilient to seasonal variability."
 format: pdf
 number-sections: true
 bibliography: references.bib
+toc: true
 ---
 
 ```{r}
@@ -19,241 +19,567 @@ bibliography: references.bib
 #| message: false
 
 library(tidyverse)
-library(palmerpenguins)
+library(ggplot2)
+library(rstanarm)
+library(dplyr)
+library(arrow)
+library(here)
+library(kableExtra)
+library(modelsummary)
 ```
 
 
 # Introduction
 
-Overview paragraph
+Outbreaks of respiratory pathogens in healthcare institutions pose ongoing challenges to public health systems, especially in urban environments like Toronto where healthcare demands are high. Understanding the dynamics of these outbreaks across different seasons and pathogens is essential for developing timely and effective control strategies. Despite advancements in medical infrastructure and infection control measures, there is still a lack of systematic research on the seasonal variations of outbreaks caused by different pathogens. This variability presents significant challenges for resource allocation and the resilience of healthcare systems, particularly when responding to emerging infectious diseases.
 
-Estimand paragraph
+This study utilizes data from 2024 related to Toronto healthcare institutions to explore the patterns and influencing factors of respiratory pathogen outbreaks. We provide a detailed description of the data sources, the measurement methods of key variables, and their distribution characteristics. Subsequently, the study employs a Poisson regression model, considering key variables such as pathogen type, seasonal variation, and outbreak setting, to assess their roles in outbreak dynamics and to offer a basis for future trend predictions. The predictive results showcase potential outbreak trends for 2025, serving as a reference for planning interventions. By analyzing the outbreak patterns of different pathogens, this study aims to offer actionable recommendations to enhance seasonal preparedness and response efficiency.
 
-Results paragraph
+The results show that COVID-19 continues to dominate the frequency of outbreaks in healthcare institutions. Notably, most pathogens have outbreak peaks in the summer, with significantly reduced activity in winter. The predictive model indicates that these seasonal trends may persist, which emphasizes the importance of adjusting control measures to accommodate seasonal variations.
 
-Why it matters paragraph
-
-Telegraphing paragraph: The remainder of this paper is structured as follows. @sec-data....
-
-
-
-
+This study highlights the necessity of incorporating seasonal changes into outbreak management strategies. By using predictive models to identify high-risk periods in advance, healthcare institutions can allocate resources more effectively and strengthen system resilience. The structure of this paper is as follows: @sec-data provides a detailed introduction to data sources and the definition and exploration of variables; @sec-model describes the model construction process and theoretical basis; @sec-results presents the model summary and predictive results; finally, @sec-discussion discusses the practical significance of the findings in the context of policy and proposes specific recommendations for improving outbreak prevention capabilities in healthcare institutions.
 
 
 # Data {#sec-data}
 
 ## Overview
 
-We use the statistical programming language R [@citeR].... Our data [@shelter].... Following @tellingstories, we consider...
+The data for this study was sourced from Open Data Toronto and downloaded using the @citeopendatapkg package. It consists of 846 observations from 2024 across 10 variables.
 
-Overview text
+Our analysis was conducted using the statistical programming language R [@citeR], leveraging a suite of packages to facilitate efficient data manipulation, modeling, and visualization. Data cleaning, transformation, and visualization were handled using `tidyverse` @tidyverse and `dplyr` @dplyr. The core analysis used Poisson regression models to explore relationships between outbreak counts and key variables, including pathogen type, seasonal variation, and outbreak settings. These models were implemented using the flexible framework offered by `rstanarm` @rstanarm for model development and extensions. Efficient data integration was achieved through arrow @arrow, and modeling workflows were supported using `modelr` @modelr within the tidyverse framework. Model summaries were generated using `modelsummary` @modelsummary, while `ggplot2` @ggplot2 was employed for creating visualizations. Enhanced table outputs were produced with `kableExtra` @kableExtra, and dynamic report generation was performed with `knitr` @citeknitr. File management, including reading parquet files, was streamlined with `here` @citehere.
+
+The analysis framework followed the structured approach provided by @citeRohan, ensuring consistency and clarity in integrating data preparation and modeling workflows. Additionally, the critique and guidelines outlined in @tellingstories informed our presentation of the data and results, emphasizing clarity and coherence.
+
+## Data cleaning
+
+The cleaning process for the dataset focused on retaining key variables relevant to respiratory outbreaks in Toronto healthcare institutions. Initially, redundant or irrelevant columns were removed, and the dataset was narrowed to include only `institution_address`, `outbreak_setting`, `type_of_outbreak`, `causative_agent_1`, `date_outbreak_began`, and `active` variables. Outbreaks were filtered to focus on respiratory pathogens of interest, such as "COVID-19," "Coronavirus*," "Rhinovirus," and "Parainfluenza." The season variable was derived from the date_outbreak_began column by mapping months to their respective seasons like December-February as Winter. Invalid or missing data were addressed by removing incomplete rows or invalid entries, ensuring data consistency. These steps ensured that the dataset was streamlined for meaningful analysis while retaining critical details.
+
+The creation of the `count_data` dataset involved aggregating the cleaned data to prepare it for statistical modeling and visualization. Outbreak events were grouped by `causative_agent_1`, `season`, `month`, and `outbreak_setting`, and the `outbreak_count` variable was calculated as the total number of outbreaks for each combination of these factors. This aggregation provided a structured summary of outbreak frequency, enabling comparisons between pathogens, seasonal trends, and healthcare settings. By summarizing the data, `count_data` served as the foundation for constructing Poisson regression models and generating meaningful visualizations to explore outbreak dynamics.
 
 ## Measurement
 	
-Some paragraphs about how we go from a phenomena in the world to an entry in the dataset.
+The data used in this study captures respiratory pathogen outbreaks in Toronto healthcare settings, collected through systematic reporting and published via @TorontoOutbreaks2024. Each outbreak is recorded as a discrete event, including the causative pathogen, the setting like hospital, long-term care facility, and key dates: when the outbreak began and when it was declared.
+
+The dataset translates real-world outbreak events into structured entries, with the primary variable being outbreak counts for each pathogen. Dates provide a temporal framework for analyzing patterns, while outbreak settings add contextual detail. Data is derived from clinical diagnoses and laboratory confirmations, ensuring reliability, though differences in reporting practices may introduce variability.
+
+This measurement framework ensures that the dataset provides a reliable overview of respiratory pathogen activity in Toronto healthcare settings. It transforms clinical and public health surveillance data into a structured format suitable for statistical analysis, offering a robust foundation for understanding outbreak dynamics.
 
 ## Outcome variables
 
-Add graphs, tables and text. Use sub-sub-headings for each outcome variable or update the subheading to be singular.
+@fig-count illustrates the outcome variable -- total outbreak counts of four respiratory pathogens (Coronavirus, COVID-19, Parainfluenza, Rhinovirus) across four seasons (Fall, Spring, Summer, Winter). COVID-19 exhibits the highest outbreak frequency overall, peaking in Summer with 133 outbreaks and showing consistent activity across other seasons (Fall: 125, Winter: 114, Spring: 98). Rhinovirus demonstrates a strong seasonal trend, with 27 outbreaks in Fall but almost negligible activity in Winter (1 outbreak). Parainfluenza outbreaks are more evenly distributed, with notable peaks in Spring (23) and Summer (18), while Coronavirus is most active in Spring (21) and shows minimal activity in Fall (4). These seasonal patterns emphasize pathogen-specific dynamics, highlighting the importance of considering both pathogen type and season when planning outbreak prevention strategies.
 
-
-
-Some of our data is of penguins (@fig-bills), from @palmerpenguins.
-
-```{r}
-#| label: fig-bills
-#| fig-cap: Bills of penguins
+```{r, fig.pos= 'H', fig.width=10, fig.height=6}
 #| echo: false
+library(arrow)
+data <- read_parquet(here::here("data/02-analysis_data/analysis_data.parquet"))
 
-ggplot(penguins, aes(x = island, fill = species)) +
-  geom_bar(alpha = 0.8) +
-  scale_fill_manual(values = c("darkorange","purple","cyan4"),
-                    guide = "none") +
-  theme_minimal() +
-  facet_wrap(~species, ncol = 1) +
-  coord_flip()
 ```
 
-Talk more about it.
-
-And also planes (@fig-planes). (You can change the height and width, but don't worry about doing that until you have finished every other aspect of the paper - Quarto will try to make it look nice and the defaults usually work well once you have enough text.)
-
-```{r}
-#| label: fig-planes
-#| fig-cap: Relationship between wing length and width
+```{r, fig.pos= 'H', fig.width=10, fig.height=6}
+#| label: fig-count
+#| fig-cap: Outbreak Counts by Pathogen and Season
 #| echo: false
-#| warning: false
-#| message: false
 
-analysis_data <- read_csv(here::here("data/02-analysis_data/analysis_data.csv"))
+library(ggplot2)
+library(dplyr)
 
-analysis_data |> 
-  ggplot(aes(x = width, y = length)) +
-  geom_point(alpha = 0.8) +
+# Summarize the data for plotting
+plot_data <- data %>%
+  group_by(causative_agent_1, season) %>% # Group by agent and season for detailed view
+  summarise(total_outbreaks = sum(outbreak_count), .groups = "drop")
+
+# Create the bar plot
+ggplot(plot_data, aes(x = causative_agent_1, y = total_outbreaks, fill = season)) +
+  geom_bar(stat = "identity", position = "dodge") + # Dodge for season-wise bars
+  geom_text(aes(label = total_outbreaks), 
+            position = position_dodge(width = 0.9), 
+            vjust = -0.5, size = 3) + # Annotate with outbreak counts
+  labs(
+    x = "Pathogen",
+    y = "Total Outbreak Count",
+    fill = "Season"
+  ) +
   theme_minimal() +
-  labs(x = "Wing width (mm)",
-       y = "Wing length (mm)")
-```
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1) # Rotate x-axis labels
+  )
 
-Talk way more about it. 
+
+```
 
 ## Predictor variables
 
-Add graphs, tables and text.
+### Causative Agent
 
-Use sub-sub-headings for each outcome variable and feel free to combine a few into one if they go together naturally.
+The `causative_agent_1` variable represents the primary pathogen responsible for outbreaks, such as COVID-19, Rhinovirus, and others. As shown in @fig-agent, COVID-19 accounts for a significantly higher number of outbreaks (55 events) compared to other pathogens, such as Parainfluenza and Rhinovirus, which each account for 14–15 events. This stark disparity underscores the dominant role of COVID-19 in driving outbreaks and reflects its heightened transmissibility and prevalence. Including this predictor is critical to differentiate outbreak patterns across pathogens, as it enables tailored intervention strategies. For instance, targeting COVID-19 mitigation could significantly reduce the overall outbreak burden, given its disproportionate impact. This variable also highlights the need for pathogen-specific public health responses to minimize transmission risks effectively.
+
+```{r, fig.pos= 'H', fig.width=10, fig.height=6}
+#| label: fig-agent
+#| fig-cap: Outbreak Counts by Pathogen
+#| echo: false
+#| warning: false
+
+ggplot(data, aes(x = causative_agent_1, fill = causative_agent_1)) +
+  geom_bar() +
+  geom_text(stat = 'count', aes(label = ..count..), vjust = -0.5) +
+  labs(
+    x = "Pathogen",
+    y = "Total Count"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
 
 
+```
+
+### Season
+
+The `season` variable captures the seasonal variability in outbreaks, categorizing events into Spring, Summer, Fall, and Winter. As shown in @fig-season, Spring (30 events) and Fall (27 events) exhibit the highest number of outbreaks, while Winter (17 events) has the lowest. These trends align with the seasonal nature of many respiratory pathogens and the influence of climate conditions on transmission. By including this variable, the analysis accounts for temporal variability, enabling public health planners to allocate resources strategically during high-risk seasons. For example, strengthening outbreak preparedness in Spring and Fall could reduce peak case loads. Additionally, this predictor emphasizes the importance of understanding seasonal drivers of infection to develop more effective prevention and control strategies.
+
+```{r, fig.pos= 'H', fig.width=10, fig.height=6}
+#| label: fig-season
+#| fig-cap: Outbreak Counts by Season
+#| echo: false
+
+ggplot(data, aes(x = season, fill = season)) +
+  geom_bar() +
+  geom_text(stat = 'count', aes(label = ..count..), vjust = -0.5) +
+  labs(
+    x = "Season",
+    y = "Total Count"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+```
+### Month
+
+The `month` variable provides granular temporal information about outbreaks throughout the year. As illustrated in @fig-month, May (12 events) and October (11 events) are the peak months for outbreaks, while most other months have relatively stable counts of 8–9 events. Monthly variation may stem from factors such as pathogen transmission cycles, seasonal transitions, or changes in human behaviors, such as increased social interactions during specific times of the year. This predictor allows for a finer temporal resolution in understanding outbreak dynamics and facilitates timely interventions, such as intensifying infection control measures in May and October. Month-level analysis also supports adaptive responses to temporal drivers that impact outbreak frequencies.
+
+```{r, fig.pos= 'H', fig.width=10, fig.height=6}
+#| label: fig-month
+#| fig-cap: Monthly Outbreak Trends
+#| echo: false
+
+ggplot(data, aes(x = factor(month, levels = 1:12), fill = factor(month))) +
+  geom_bar() +
+  geom_text(stat = 'count', aes(label = ..count..), vjust = -0.5) +
+  scale_x_discrete(labels = month.abb) +
+  labs(
+    x = "Month",
+    y = "Total Count"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
 
 
+```
+
+### Outbreak Setting
+
+The `outbreak_setting` variable reflects the specific environments where outbreaks occur, such as long-term care homes (LTCH), hospitals (e.g., acute care or psychiatric wards), and retirement homes. As shown in @fig-outbreak_setting, LTCHs account for the highest number of outbreaks (37 events), while transitional care settings report the fewest (3 events). The elevated frequency of outbreaks in LTCHs highlights the vulnerability of their aging populations and the densely populated living conditions. Hospitals, particularly acute care wards, also exhibit notable outbreak counts (11 events). Including this variable captures the spatial distribution of outbreak risks, which is essential for resource prioritization and implementing targeted preventive measures. For instance, focusing on LTCHs with enhanced infection control and vaccination campaigns could mitigate their disproportionate outbreak burden. This predictor ensures that the analysis addresses key differences across institutional settings to design context-specific public health interventions effectively.
+
+```{r, fig.pos= 'H', fig.width=10, fig.height=6}
+#| label: fig-outbreak_setting
+#| fig-cap: Outbreak Count by Setting
+#| echo: false
 
 
+ggplot(data, aes(x = outbreak_setting, fill = outbreak_setting)) +
+  geom_bar() +
+  geom_text(stat = 'count', aes(label = ..count..), vjust = -0.5) +
+  labs(
+    x = "Setting",
+    y = "Total Count"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(legend.position = "none")
 
 
-# Model
+```
 
-The goal of our modelling strategy is twofold. Firstly,...
+# Model {#sec-model}
 
-Here we briefly describe the Bayesian analysis model used to investigate... Background details and diagnostics are included in [Appendix -@sec-model-details].
+The goal of our modelling strategy is to understand the factors influencing outbreak frequencies in Toronto healthcare institutions and to predict future outbreak trends. By employing Poisson regression models, we aim to examine how variables such as pathogen type, seasonality, month, and outbreak settings contribute to the observed counts of outbreaks. Interaction terms are included to explore whether temporal trends vary across pathogens and seasons, providing deeper insights into potential seasonal patterns and pathogen-specific behaviors. This approach enables us to generate predictions for future periods, such as 2025, which can inform public health planning and resource allocation while maintaining a model that balances interpretability and complexity.
+
+In analyzing outbreak frequency, we developed multiple Poisson regression models to explore the effects of pathogens, time (`month` and `season`), and institutional settings (`outbreak_setting`) on outbreak rates. Starting with a baseline model focusing on main effects, we expanded the models by introducing interaction terms like pathogen with month, season with month to investigate dynamic relationships between variables. After comparing models, we identified that the Poisson interaction model, with significant pathogen-month interactions and the lowest AIC--507.71, best captured the monthly variation in outbreak frequency for specific pathogens such as Rhinovirus. Therefore, this model was selected as the optimal tool for studying the relationship between pathogens and months.
+
+Diagnostics are included in [Appendix -@sec-model-details].
 
 ## Model set-up
 
-Define $y_i$ as the number of seconds that the plane remained aloft. Then $\beta_i$ is the wing width and $\gamma_i$ is the wing length, both measured in millimeters.  
+The model predicts the number of outbreaks in healthcare settings using the following predictor variables:
 
-\begin{align} 
-y_i|\mu_i, \sigma &\sim \mbox{Normal}(\mu_i, \sigma) \\
-\mu_i &= \alpha + \beta_i + \gamma_i\\
-\alpha &\sim \mbox{Normal}(0, 2.5) \\
-\beta &\sim \mbox{Normal}(0, 2.5) \\
-\gamma &\sim \mbox{Normal}(0, 2.5) \\
-\sigma &\sim \mbox{Exponential}(1)
+1. **Causative Agent**: Represents the primary pathogen identified in the outbreak (e.g., COVID-19, influenza). This variable captures pathogen-specific effects on outbreak counts.
+
+2. **Season**: Denotes the season during which the outbreak occurred (Winter, Spring, Summer, Fall). It accounts for seasonal variations in respiratory disease transmission.
+
+3. **Month**: Represents the calendar month when the outbreak began. It captures finer temporal patterns within seasons.
+
+4. **Outbreak Setting**: Refers to the type of healthcare facility where the outbreak occurred (e.g., hospitals, long-term care facilities). This variable accounts for variations across healthcare contexts.
+
+Define $ y_i$ as the number of outbreaks observed for  $i_{\text{th}}$ record. Let  `causative_agent_1` represent the primary pathogen type, `month` denote the month the outbreak began, `season` denote the season, and `outbreak_setting` denote the type of facility.
+
+\begin{align}
+y_i | \lambda_i &\sim \mbox{Poisson}(\lambda_i) \\
+\log(\lambda_i) &= \beta_0 + \beta_1 \cdot \texttt{causative\_agent\_1}_i + \beta_2 \cdot \texttt{month}_i + \beta_3 \cdot \texttt{season}_i \\
+&\quad + \beta_4 \cdot (\texttt{month}_i \times \texttt{season}_i) + \beta_5 \cdot \texttt{outbreak\_setting}_i \\
+\beta_0 &\sim \mbox{Normal}(0, 10) \\
+\beta_1, \beta_2, \beta_3, \beta_4, \beta_5 &\sim \mbox{Normal}(0, 10)
 \end{align}
 
-We run the model in R [@citeR] using the `rstanarm` package of @rstanarm. We use the default priors from `rstanarm`.
+Where:
+
+- $y_i$ represents the outbreak count for record $i_{\text{th}}$.
+
+- $\lambda_i$ is the expected count of outbreaks for record $i_{\text{th}}$.
+
+- $\beta_0$ is the intercept, while $\beta_1$ through $\beta_5$ are coefficients describing the effects of the predictors.
+
+This Poisson regression model uses a log-link function to ensure that the predicted outbreak counts $\lambda_i$ remain positive. It incorporates main effects for pathogen type, month, season, and outbreak setting, as well as an interaction between month and season.
+
+We run the model in R [@citeR] using the `rstanarm` package of @rstanarm.
+
+## Model justification
+
+The Poisson regression model was chosen for its suitability in handling count data, such as outbreak frequencies in healthcare settings, where the dependent variable `outbreak_count` reflects non-negative integers. This aligns naturally with the properties of the Poisson distribution. The model captures the relationship between the frequency of outbreaks and key predictors, including `causative_agent_1`, `month`, `season`, and `outbreak_setting`, which were identified as relevant through a thorough examination of the dataset. These variables represent temporal, environmental, and pathogen-specific factors influencing outbreak patterns.
+
+To account for interactions between variables, terms such as `month * season` and `month * causative_agent_1` were incorporated. These interaction terms allow the model to capture variations in outbreak frequencies across seasons and pathogen types over time. For example, some pathogens may show pronounced seasonality, while others may follow a steadier pattern. This choice was informed by observed trends in the data, where both temporal and pathogen-specific factors appeared to interact meaningfully.
+
+The model was designed to balance interpretability and complexity. Variables such as `month` were included as numeric predictors to preserve temporal trends, while categorical variables like `season` and `outbreak_setting` were retained to reflect their discrete nature. This treatment ensures consistency with the definitions provided in the data section while facilitating a clear interpretation of the results. The model remains neither overly simplistic nor unnecessarily complex, making it appropriate for the given research question.
+
+Model diagnostics, including residual analysis and dispersion tests, were performed to validate the assumptions of the Poisson model. Overdispersion was addressed by testing alternative models such as the negative binomial regression, but the Poisson model was ultimately retained due to its interpretability, stability, and alignment with the dataset. The model was implemented in R [@citeR] using the `glm()` function, and predictions for outbreak frequencies in 2025 further demonstrate its potential utility for public health planning. While assumptions such as independent events and the exclusion of potential confounders like population density are acknowledged as limitations, the model provides a robust framework for analyzing outbreak patterns.
 
 
-### Model justification
+# Results {#sec-results}
 
-We expect a positive relationship between the size of the wings and time spent aloft. In particular...
+The analysis employed a Poisson regression model to investigate the relationship between the outcome variable (`outbreak_count`) and key predictor variables, including pathogen type, month, season, and outbreak setting. The fourth section presents detailed results on the associations between these variables and outbreak frequency, as described in @sec-model_results. The model highlights significant relationships, such as the notable influence of specific pathogens like COVID-19 and outbreak settings like long-term care homes on the frequency of outbreaks.
 
-We can use maths by including latex between dollar signs, for instance $\theta$.
+Additionally, in @sec-model_prediction_results, the model was used to predict potential outbreak trends for 2025. These predictions assume consistent patterns in the predictor variables and similar environmental conditions to those observed in 2024. However, the predictions are limited by the exclusion of other potential influencing factors, such as changes in public health interventions, population dynamics, or pathogen evolution. The more particular information see in @sec-discussion. The forecast aims to provide an estimate of outbreak patterns under comparable conditions, serving as a baseline scenario to guide preparedness and response planning.
 
+## Model results {#sec-model_results}
 
-# Results
+Our model summary result are summarized in @tbl-modelsummary. The Poisson regression model demonstrates significant relationships between outbreak counts and several predictors. COVID-19 is strongly associated with higher outbreak counts ($\beta$ = 1.57, p < 0.001), highlighting its dominant role compared to other pathogens, such as Parainfluenza and Rhinovirus, which show no significant associations. Seasonal effects are notable, with Spring and Summer significantly reducing outbreak counts compared to Fall ($\beta$ = -5.21) and ($\beta$ = -4.95, p < 0.001). The interaction between month and season further refines these effects, showing that seasonal impacts vary across months.
 
-Our results are summarized in @tbl-modelresults.
+Outbreak settings also contribute significantly; long-term care homes (LTCHs) show the highest association with outbreak counts ($\beta$ = 1.64, p < 0.001), while transitional care settings exhibit significantly lower outbreak frequencies ($\beta$ = -1.64, p = 0.006). The model achieves a good fit with an AIC of 449.29, a BIC of 490.6, and a log-likelihood of -208.64. While the RMSE of 2.6 indicates some variability in the data, the overall model performance ($F$ = 35.11) suggests strong predictive capacity.
+
 
 ```{r}
 #| echo: false
 #| eval: true
 #| warning: false
-#| message: false
 
-library(rstanarm)
-
-first_model <-
-  readRDS(file = here::here("models/first_model.rds"))
+poisson_season_time <- readRDS(file = here::here("models/poisson_season_time.rds"))
+poisson_outbreak_seanson <- readRDS(file = here::here("models/poisson_model_outbreak_season.rds"))
+poisson_interaction_seanson <- readRDS(file = here::here("models/poisson_interaction_season_model.rds"))
 ```
 
-```{r}
+
+
+```{r,fig.pos= 'H'}
 #| echo: false
 #| eval: true
-#| label: tbl-modelresults
-#| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
+#| label: tbl-modelsummary
+#| tbl-cap: Summary of the chosen model
 #| warning: false
 
-modelsummary::modelsummary(
-  list(
-    "First model" = first_model
-  ),
-  statistic = "mad",
-  fmt = 2
+modelsummary(
+  model = poisson_season_time,
+  output = "kableExtra", 
+  stars = FALSE
+) %>%
+  kable_styling(
+    full_width = FALSE, 
+    position = "center", 
+    latex_options = c("hold_position", "scale_down")
+  ) %>%
+  column_spec(column = 1, width = "14em") %>% 
+  column_spec(column = 2, width = "14em") %>%
+  add_header_above(c(" " = 1, "Model Summary" = 1))
+
+```
+\newpage
+
+@fig-ciplot illustrates the coefficient estimates and their 95% confidence intervals for the Poisson regression model predictors, highlighting the direction, magnitude, and statistical significance of their effects on outbreak counts.
+
+**Causative Agent Effects**
+
+Among the pathogens, COVID-19 has a strongly positive and statistically significant association with outbreak counts, as its confidence interval does not overlap zero. This finding underscores the dominant role of COVID-19 in driving outbreaks compared to the reference pathogen. In contrast, Rhinovirus and Parainfluenza show smaller coefficients with confidence intervals that include zero, indicating no statistically significant effects relative to the reference pathogen. These results emphasize the disproportionately high burden of COVID-19 on outbreak frequencies.
+
+**Seasonal Effects**
+
+The seasonal predictors reveal distinct trends. Both Spring and Summer exhibit negative coefficients with confidence intervals that exclude zero, suggesting significant decreases in outbreak counts compared to the reference season (Fall). Winter, while also having a negative coefficient, shows a confidence interval overlapping zero, implying that its effect is not statistically significant. These findings highlight the seasonal variability in outbreaks, with Fall serving as a high-risk period for certain pathogens.
+
+**Temporal Trends**
+
+The coefficient for month is negative and statistically significant, indicating a general decline in outbreak counts as the year progresses. This temporal trend likely reflects the waning of seasonal pathogen transmission cycles and shifts in public health interventions or behaviors later in the year. Interactions between month and seasons reveal more nuanced patterns: Month:Spring and Month:Summer have positive and statistically significant coefficients, suggesting increases in outbreaks over the months during these seasons. Conversely, Month:Winter shows a significant negative effect, reflecting a decline in outbreaks over the course of the winter months.
+
+**Setting Effects**
+
+Outbreak settings significantly influence the frequency of outbreaks. Long-Term Care Homes (LTCHs) have a positive and statistically significant coefficient, reflecting their heightened vulnerability due to factors like densely populated environments and vulnerable residents. Hospital-Chronic Care and Retirement Homes also show positive coefficients, but their confidence intervals marginally overlap zero, indicating borderline significance. On the other hand, Hospital-Psychiatric and Transitional Care settings have negative coefficients with confidence intervals overlapping zero, suggesting no statistically significant effects relative to the reference setting.
+
+**Implications**
+
+The results reveal important drivers of outbreak frequencies, including the dominant role of COVID-19, seasonal variability, and the heightened risk associated with specific settings like LTCHs. These findings underscore the need for tailored public health strategies, such as increased surveillance during high-risk seasons like Fall, year-round measures for COVID-19, and targeted interventions in vulnerable settings. The significance of temporal and seasonal interactions highlights the importance of adapting outbreak responses to both seasonal and monthly trends.
+
+```{r, fig.pos= 'H', fig.width=10, fig.height=6}
+#| echo: false
+#| eval: true
+#| label: fig-ciplot
+#| fig-cap: Summary of the confidence interval for predict variable
+#| warning: false
+
+b <- list(geom_vline(xintercept = 0, color = 'orange'),
+          annotate("rect", alpha = .1,
+                   xmin = -.5, xmax = .5, 
+                   ymin = -Inf, ymax = Inf),
+          geom_point(aes(y = term, x = estimate), alpha = .3, 
+                     size = 8, color = 'red'))
+
+modelplot(poisson_season_time, background = b)
+```
+
+
+@fig-modelresults shows the predicted outbreak counts for different pathogens 
+`causative_agent_1` across months and seasons, highlighting distinct temporal patterns.
+
+**Coronavirus**: Outbreak counts are higher during the winter months (January and February) and decline sharply in spring and summer, consistent with the seasonality of respiratory viruses that thrive in colder conditions.
+
+**COVID-19**: Unlike other pathogens, COVID-19 maintains relatively stable outbreak counts throughout the year, with minor fluctuations. This suggests that its transmission is less affected by seasonal variations, reflecting its unique epidemiological dynamics.
+
+**Parainfluenza**: Parainfluenza outbreaks peak in late summer (August and September) and drop significantly during the winter, showing a strong seasonal pattern likely influenced by environmental factors.
+
+**Rhinovirus**: Rhinovirus shows bimodal peaks in early spring (March) and late summer (August), which align with known seasonal transitions favoring its transmission.
+
+In summary, the model reveals that while some pathogens exhibit clear seasonality, others, such as COVID-19, are less dependent on seasonal factors. These insights can inform targeted, pathogen-specific intervention strategies for outbreak control.
+
+```{r, fig.pos= 'H', fig.width=10, fig.height=6}
+#| echo: false
+#| eval: true
+#| label: fig-modelresults
+#| fig-cap: Outbreak Frequency by Pathogen and Month with Seasonal Effects
+#| warning: false
+# Choose the final model and plot the interaction poisson model 
+data$predicted <- predict(poisson_season_time, type = "response")
+
+season_data <- data.frame(
+  season = c("Winter", "Winter", "Spring", "Summer", "Fall"),
+  start_month = c(1, 12, 3, 6, 9), 
+  end_month = c(3, 12, 6, 9, 12), 
+  ymin = -Inf,
+  ymax = Inf
 )
+
+
+ggplot(data, aes(x = month, y = predicted, color = causative_agent_1)) +
+  geom_rect(data = season_data, aes(xmin = start_month, xmax = end_month, ymin = ymin, ymax = ymax, fill = season),
+            inherit.aes = FALSE, alpha = 0.2) + 
+  geom_line() +
+  geom_smooth(method = "loess", se = FALSE) +
+  facet_wrap(~ causative_agent_1, scales = "free_y") +
+  labs(
+    x = "Month",
+    y = "Predicted Outbreak Count",
+    fill = "Season"
+  ) +
+  scale_x_continuous(breaks = 1:12, labels = month.abb) +
+  scale_fill_manual(values = c("Winter" = "blue", "Spring" = "green", "Summer" = "yellow", "Fall" = "orange")) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 60, hjust = 1)
+  )
 ```
 
+## Model prediction results {#sec-model_prediction_results}
 
+The 2025 predicted outbreak frequencies reveal distinct temporal patterns across different pathogens. From @fig-modelprediction, Coronavirus* exhibits a gradual decline in outbreak counts from winter through summer, consistent with its seasonally driven nature. In contrast, COVID-19 maintains a steady outbreak frequency throughout the year, with only minor fluctuations, suggesting limited sensitivity to seasonal variation. Parainfluenza is projected to peak in late summer and early fall, reflecting established seasonal transmission patterns. Similarly, Rhinovirus demonstrates a bimodal distribution, with notable peaks in spring and late summer, aligning with its known epidemiological behavior. These pathogen-specific predictions underline the necessity of targeted strategies to address seasonal outbreaks effectively.
 
+```{r, fig.pos= 'H', fig.width=10, fig.height=6}
+#| echo: false
+#| eval: true
+#| label: fig-modelprediction
+#| fig-cap: Predicted Outbreak Frequency by Pathogen in 2025
+#| warning: false
+# Prepare new data for predictions
+new_data <- expand.grid(
+  month = 1:12,
+  outbreak_setting = unique(data$outbreak_setting),
+  causative_agent_1 = unique(data$causative_agent_1)
+)
 
-# Discussion
+# Assign seasons based on months
+new_data$season <- case_when(
+  new_data$month %in% c(12, 1, 2) ~ "Winter",
+  new_data$month %in% c(3, 4, 5) ~ "Spring",
+  new_data$month %in% c(6, 7, 8) ~ "Summer",
+  new_data$month %in% c(9, 10, 11) ~ "Fall"
+)
 
-## First discussion point {#sec-first-point}
+new_data$season <- factor(new_data$season, levels = c("Winter", "Spring", "Summer", "Fall"))
+new_data$causative_agent_1 <- factor(new_data$causative_agent_1, levels = levels(data$causative_agent_1))
+new_data$outbreak_setting <- factor(new_data$outbreak_setting, levels = levels(data$outbreak_setting))
 
-If my paper were 10 pages, then should be be at least 2.5 pages. The discussion is a chance to show off what you know and what you learnt from all this. 
+# Predict outbreak counts
+new_data$predicted_outbreak <- predict(poisson_season_time, newdata = new_data, type = "response")
 
-## Second discussion point
+# Define season shading for the plot
+season_data <- data.frame(
+  season = c("Winter", "Winter", "Spring", "Summer", "Fall"),
+  start_month = c(1, 12, 3, 6, 9), 
+  end_month = c(3, 12, 6, 9, 12), 
+  ymin = -Inf,
+  ymax = Inf
+)
 
-Please don't use these as sub-heading labels - change them to be what your point actually is.
+# Create the plot
+ggplot(new_data, aes(x = month, y = predicted_outbreak, color = causative_agent_1)) +
+  geom_rect(data = season_data, aes(xmin = start_month, xmax = end_month, ymin = ymin, ymax = ymax, fill = season),
+            inherit.aes = FALSE, alpha = 0.2) +
+  geom_line() +
+  geom_smooth(method = "loess", se = FALSE) +
+  facet_wrap(~ causative_agent_1, scales = "free_y") +
+  labs(
+    x = "Month",
+    y = "Predicted Outbreak Count",
+    fill = "Season",
+    color = "Pathogen"
+  ) +
+  scale_x_continuous(breaks = 1:12, labels = month.abb) +
+  scale_fill_manual(values = c("Winter" = "blue", "Spring" = "green", "Summer" = "yellow", "Fall" = "orange")) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 60, hjust = 1)
+  )
 
-## Third discussion point
+```
+
+The @fig-modelprediction_comparison shows comparison between actual 2024 outbreak data and model predictions highlights strong alignment in capturing overall patterns, though some deviations are observed. COVID-19 predictions align closely with actual frequencies, showcasing consistency and robustness in modeling. For Parainfluenza, the model effectively captures the general seasonal peak but slightly overestimates outbreaks during summer and underestimates them in fall. Rhinovirus predictions accurately reflect its bimodal distribution, though discrepancies occur during spring and summer months. For Coronavirus*, the model captures the downward trend but underestimates outbreak counts in early months. Overall, the model demonstrates its capacity to replicate key seasonal and temporal dynamics, providing a reliable basis for future projections while highlighting areas for potential refinement in capturing finer nuances.
+
+```{r, fig.pos= 'H', fig.width=10, fig.height=6}
+#| echo: false
+#| eval: true
+#| label: fig-modelprediction_comparison
+#| fig-cap: Comparison of Actual and Predicted Outbreak Frequencies
+#| warning: false
+
+combined_data <- data %>%
+  mutate(source = "Actual") %>%
+  select(month, causative_agent_1, outbreak_count, source) %>%
+  rename(count = outbreak_count) %>%
+  bind_rows(
+    new_data %>%
+      mutate(source = "Predicted") %>%
+      select(month, causative_agent_1, predicted_outbreak, source) %>%
+      rename(count = predicted_outbreak)
+  )
+
+ggplot(combined_data, aes(x = month, y = count, color = source)) +
+  geom_line(size = 1) +
+  facet_wrap(~ causative_agent_1, scales = "free_y") +
+  labs(
+    x = "Month",
+    y = "Outbreak Count",
+    color = "Source"
+  ) +
+  scale_x_continuous(breaks = 1:12, labels = month.abb) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 60, hjust = 1),
+    legend.position = "bottom"
+  )
+```
+
+# Discussion {#sec-discussion}
+
+This study employed a Poisson regression model to analyze seasonal and pathogen-specific outbreak patterns and predict outbreak frequencies for four pathogens in 2025. The analysis revealed distinct seasonal trends, particularly for Rhinovirus and Parainfluenza, while COVID-19 exhibited relatively consistent transmission rates throughout the year. Comparing the 2025 predictions with the actual outbreak data from 2024 demonstrated the model's ability to capture key temporal and seasonal patterns. However, deviations for smaller-scale pathogens highlighted potential areas for refinement, underscoring the need for enhanced modeling approaches to address variability in outbreak dynamics.
+
+## Seasonal Sensitivity of Pathogens {#sec-first-point}
+
+The findings revealed marked seasonal sensitivity for pathogens like Rhinovirus and Parainfluenza, which showed distinct peaks in spring and late summer to early fall, respectively. In contrast, COVID-19 displayed a near-steady transmission rate across the year, reflecting a lack of climatic influence. This consistency aligns with guidance from the World Health Organization, which notes that COVID-19 transmission is driven by human-to-human contact rather than environmental factors @citewho. Rhinovirus and Parainfluenza, however, exhibited seasonality driven by factors such as weather transitions, increased indoor activity, and environmental stability favorable to these pathogens.
+
+The observed seasonal variations emphasize the need for targeted interventions during high-risk periods. For example, scaling vaccination campaigns before Rhinovirus peaks in spring or bolstering healthcare resources for Parainfluenza in late summer could effectively reduce outbreaks. Conversely, COVID-19’s steady transmission underscores the necessity of maintaining year-round public health measures such as vaccination drives, consistent mask use, and robust surveillance systems.
+
+## Influence of Outbreak Settings
+
+The analysis showed substantial variation in outbreak frequencies across settings, with long-term care homes (LTCHs) reporting the highest outbreak counts. This finding underscores the vulnerability of residents in these facilities, attributed to factors such as shared living spaces, advanced age, and pre-existing health conditions. COVID-19, in particular, demonstrated disproportionately high frequencies in LTCHs, highlighting the need for rigorous infection control measures, including regular testing, enhanced hygiene protocols, and vaccination prioritization in these facilities.
+
+In contrast, lower outbreak frequencies were observed in settings such as transitional care centers, suggesting that operational protocols, population density, or resident health status might play a mitigating role. These findings call for tailored public health strategies. For LTCHs, enhanced access to healthcare resources and strict infection control practices are critical. In lower-risk settings, routine monitoring and flexible outbreak response protocols could be sufficient to manage risks without overburdening resources.
 
 ## Weaknesses and next steps
 
-Weaknesses and next steps should also be included.
+Despite its strengths, this study has several limitations. First, the focus on four pathogens restricts the generalizability of the findings. Outbreak data relied on administrative reporting, which may be incomplete or inconsistent, potentially skewing the model’s predictions. Moreover, the dominance of COVID-19 in the dataset may have overshadowed smaller-scale pathogens, reducing their statistical significance and limiting the model’s ability to account for their unique dynamics. This imbalance highlights the need to construct datasets that better represent diverse pathogen behaviors.
+
+The predictions for 2025 also assume static conditions based on 2024 data, making them less adaptable to emerging pathogens or shifts in environmental or public health contexts. External factors such as population density, climatic changes, or new interventions (e.g., novel vaccines) were not incorporated, potentially affecting predictive accuracy.
+
+Future research should address these limitations by expanding the scope of the dataset to include additional pathogens, longer time periods, and diverse geographic regions. Incorporating environmental variables such as temperature and humidity, along with metrics for public health interventions, could improve model precision. Additionally, examining the impact of targeted strategies, such as vaccination campaigns or changes in healthcare policies, would provide actionable insights for outbreak management. This expanded approach could better inform public health planning, ensuring preparedness for both established and emerging pathogens.
 
 \newpage
 
 \appendix
 
-# Appendix {-}
+# Appendix {#sec-appendix}
 
+## Optimized Methodology of Data Collection and Reporting
 
-# Additional data details
+**Outbreak Data Framework and Governance**
+
+The dataset utilized in this study centers on outbreak data collected from healthcare institutions in Toronto, following stringent regulatory guidelines. The data collection is governed by the Ontario Health Protection and Promotion Act (HPPA) @OntarioHealthAct1990, which mandates healthcare institutions—including hospitals, long-term care homes, and retirement homes—to monitor and report signs of respiratory and gastroenteric infections among staff and residents. An outbreak is defined as an unusual increase in infection rates beyond the expected baseline within a specific institution or ward. Reporting is carried out by the institutions to Toronto Public Health (TPH), which investigates the reported outbreaks and collaborates with institutions to implement control measures @TorontoOutbreaks2024.
+
+**Population, Framework, and Sampling Coverage**
+
+The dataset includes all reported outbreaks from Toronto's healthcare institutions, representing a near-complete population of healthcare-associated outbreaks. The framework, defined by HPPA requirements, ensures comprehensive coverage of outbreaks within institutions mandated to report. The data essentially serves as a full census of reported outbreaks rather than a traditional sample, as all institutions are legally obligated to report under HPPA. However, certain cases are excluded, such as mild infections managed outside healthcare settings or individuals unable to seek timely medical care, resulting in potential underrepresentation.
+
+**Reporting Process and Data Collection**
+
+Healthcare institutions identify and report outbreaks based on clinical or laboratory confirmation of cases. Reports are submitted to Toronto Public Health and updated weekly to provide real-time insights @OntarioMinistry2024. Smaller outbreaks or delayed diagnoses may be underreported, introducing gaps in the dataset. Variability in reporting practices across institution types, such as more frequent reporting by long-term care homes compared to transitional care centers, may also influence the representativeness of the dataset.
+
+**Observational Nature of the Data**
+
+This dataset relies on observational data collected through mandatory administrative reporting rather than experimental design or sampling. As such, the dataset ensures extensive coverage across a variety of healthcare settings. However, inconsistencies in institutional reporting practices could introduce biases, with certain settings, such as retirement homes, potentially reporting more consistently due to heightened surveillance measures compared to other care facilities.
+
+**Strengths and Limitations of the Dataset**
+
+The dataset provides a robust longitudinal view of outbreaks in Toronto's healthcare settings, capturing detailed variables such as outbreak duration, pathogen type, and affected settings. This granularity allows for nuanced analysis of temporal and spatial patterns of infection. However, the reliance on institutional reporting introduces some limitations. Smaller outbreaks or infections resolved without intervention may be omitted, leading to underreported outbreak frequencies. Additionally, human and systematic errors—such as misdiagnoses or delays in reporting—may compromise data accuracy.
+
+**Reporting Standards and Data Quality**
+
+To ensure uniformity, reporting adheres to standardized protocols under the HPPA. Each outbreak entry includes key variables such as pathogen type, outbreak duration, and institution type. However, potential sources of variability remain, such as differing diagnostic accuracy or delays in reporting due to administrative burdens. Smaller outbreaks, particularly those that resolve quickly, may not be fully captured.
+
+**Connection to Literature and Data Applications**
+
+This dataset aligns with broader efforts to monitor and mitigate healthcare-associated infections, as discussed in the 2023-2024 Public Health Plan @Canada2024. The outbreak reporting framework complements international standards, such as the World Health Organization's definitions for disease transmission @citewho. These insights reinforce the global importance of effective outbreak surveillance and reporting to manage healthcare-associated infections.
 
 # Model details {#sec-model-details}
 
-## Posterior predictive check
+The diagnostic plots @fig-diagnostic provide insights into the goodness-of-fit and assumptions of the Poisson regression model:
 
-In @fig-ppcheckandposteriorvsprior-1 we implement a posterior predictive check. This shows...
+**Residuals vs. Fitted:** This plot reveals a moderate deviation from randomness, suggesting potential non-linearity or issues with model fit. The points generally cluster around zero, but certain observations (e.g., #14) exhibit higher residuals, indicating possible outliers or influential points.
 
-In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows... 
+**Q-Q Plot of Residuals:** The Q-Q plot demonstrates that the residuals mostly follow a theoretical normal distribution, though slight deviations are observed in the tails. Observation #14 again emerges as an outlier, potentially impacting the model fit.
 
-```{r}
-#| eval: true
+**Scale-Location Plot:** The Scale-Location plot shows variability in the spread of residuals across predicted values. The slight upward trend suggests heteroscedasticity, where variance increases with higher fitted values, which may indicate a limitation of the Poisson model in capturing variance accurately.
+
+**Cook's Distance:** The Cook's distance plot identifies influential observations, particularly #14 and #63, which have a disproportionate impact on model coefficients. These points warrant further examination to determine if they represent true outliers or errors in data collection.
+
+**Residuals vs. Leverage:** This plot highlights observation #63 as a high-leverage point with substantial influence on the regression line, as indicated by its position above the Cook’s distance threshold. Such points can disproportionately affect the model and may require additional attention or sensitivity analysis.
+
+**Cook's Distance vs. Leverage:** This combined plot reiterates the influence of high-leverage points like #14 and #63, which appear beyond acceptable boundaries for leverage and Cook’s distance, reinforcing the need to assess these observations carefully.
+
+In summary, the diagnostics suggest that while the model captures the overall trend reasonably well, there are notable concerns with influential observations (#14 and #63) and mild heteroscedasticity. These findings indicate the need for potential model refinement, such as considering alternative distributions (e.g., negative binomial) or investigating data anomalies.
+
+```{r, fig.pos= 'H', fig.width=10, fig.height=6}
+#| label: fig-diagnostic
+#| fig-cap: Diagnostic Plots of model
 #| echo: false
-#| message: false
-#| warning: false
-#| label: fig-ppcheckandposteriorvsprior
-#| layout-ncol: 2
-#| fig-cap: "Examining how the model fits, and is affected by, the data"
-#| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
 
-pp_check(first_model) +
-  theme_classic() +
-  theme(legend.position = "bottom")
-
-posterior_vs_prior(first_model) +
-  theme_minimal() +
-  scale_color_brewer(palette = "Set1") +
-  theme(legend.position = "bottom") +
-  coord_flip()
+par(mfrow = c(2,3))
+plot(poisson_season_time, which = 1:6)
 ```
-
-## Diagnostics
-
-@fig-stanareyouokay-1 is a trace plot. It shows... This suggests...
-
-@fig-stanareyouokay-2 is a Rhat plot. It shows... This suggests...
-
-```{r}
-#| echo: false
-#| eval: true
-#| message: false
-#| warning: false
-#| label: fig-stanareyouokay
-#| fig-cap: "Checking the convergence of the MCMC algorithm"
-#| fig-subcap: ["Trace plot", "Rhat plot"]
-#| layout-ncol: 2
-
-plot(first_model, "trace")
-
-plot(first_model, "rhat")
-```
-
 
 
 \newpage
 
 
 # References
-
 
