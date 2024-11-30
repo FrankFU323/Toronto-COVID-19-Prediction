@@ -2,14 +2,13 @@
 
 ## Overview
 
-This repo aims to predict the healthcare outbreak for 2025 in Toronto based on the dataset of 2024.
-
+This repository contains the analysis and predictive modeling of outbreak patterns across various healthcare settings using Poisson regression. The study focuses on understanding the seasonal and pathogen-specific trends of outbreak frequencies for pathogens such as COVID-19, Rhinovirus, and Parainfluenza, leveraging a comprehensive dataset from Toronto's healthcare institutions. Predictive models were developed to estimate outbreak counts for 2025, incorporating key variables like month, season, pathogen type, and outbreak setting.
 
 ## File Structure
 
 The repo is structured as:
 
--   `data/raw_data` contains the raw data as obtained from X.
+-   `data/raw_data` contains the raw data as obtained from website.
 -   `data/analysis_data` contains the cleaned dataset that was constructed.
 -   `model` contains fitted models. 
 -   `other` contains relevant literature, details about LLM chat interactions, and sketches.
