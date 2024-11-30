@@ -1,49 +1,54 @@
 #### Preamble ####
-# Purpose: Models... [...UPDATE THIS...]
-# Author: Rohan Alexander [...UPDATE THIS...]
-# Date: 11 February 2023 [...UPDATE THIS...]
-# Contact: rohan.alexander@utoronto.ca [...UPDATE THIS...]
+# Purpose: Plot the outcome and predict variable
+# Author: Tianrui Fu
+# Date: 29 November 2024
+# Contact: tianrui.fu@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: [...UPDATE THIS...]
-# Any other information needed? [...UPDATE THIS...]
+# Pre-requisites: None
+# Any other information needed? None
 
 
 #### Workspace setup ####
 library(tidyverse)
-library(rstanarm)
 library(ggplot2)
 
 #### Read data ####
-analysis_data <- read_csv("data/02-analysis_data/analysis_data.csv")
+data <- read_parquet(here::here("data/02-analysis_data/analysis_data.parquet"))
 
 ### Plot data
-ggplot(analysis_data, aes(x = causative_agent_1)) +
-  geom_bar(fill = "steelblue") +
-  labs(
-    title = "Distribution of Causative Agents",
-    x = "Causative Agent",
-    y = "Count"
-  ) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+## Outcome variable -- Outbreak count
+plot_data <- data %>%
+  group_by(causative_agent_1, season) %>% # Group by agent and season for detailed view
+  summarise(total_outbreaks = sum(outbreak_count), .groups = "drop")
 
-### Model data ####
-first_model <-
-  stan_glm(
-    formula = flying_time ~ length + width,
-    data = analysis_data,
-    family = gaussian(),
-    prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
-    prior_intercept = normal(location = 0, scale = 2.5, autoscale = TRUE),
-    prior_aux = exponential(rate = 1, autoscale = TRUE),
-    seed = 853
-  )
+# Create the bar plot
+ggplot(plot_data, aes(x = causative_agent_1, y = total_outbreaks, fill = season)) +
+  geom_bar(stat = "identity", position = "dodge") + # Dodge for season-wise bars
+  geom_text(aes(label = total_outbreaks), 
+            position = position_dodge(width = 0.9), 
+            vjust = -0.5, size = 3)
+
+## Predict variable
+### Causative Agent
+ggplot(data, aes(x = causative_agent_1, fill = causative_agent_1)) +
+  geom_bar() +
+  geom_text(stat = 'count', aes(label = ..count..), vjust = -0.5)
+
+### Season
+ggplot(data, aes(x = season, fill = season)) +
+  geom_bar() +
+  geom_text(stat = 'count', aes(label = ..count..), vjust = -0.5)
+
+### Month
+ggplot(data, aes(x = factor(month, levels = 1:12), fill = factor(month))) +
+  geom_bar() +
+  geom_text(stat = 'count', aes(label = ..count..), vjust = -0.5)
+
+### Outbreak setting
+ggplot(data, aes(x = outbreak_setting, fill = outbreak_setting)) +
+  geom_bar() +
+  geom_text(stat = 'count', aes(label = ..count..), vjust = -0.5)
 
 
-#### Save model ####
-saveRDS(
-  first_model,
-  file = "models/first_model.rds"
-)
 
 

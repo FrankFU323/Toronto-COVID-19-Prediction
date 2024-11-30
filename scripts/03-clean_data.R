@@ -34,18 +34,22 @@ cleaned_data <- raw_data |>
     date_outbreak_began = as.Date(date_outbreak_began)
   )
 
-# Count for each causative agent
-causative_counts <- cleaned_data |>
-  group_by(causative_agent_1) |>
-  summarise(count = n()) |>
-  ungroup()
+# Transfer count of date to month 
+cleaned_data$month <- as.numeric(format(as.Date(cleaned_data$date_outbreak_began), "%m"))
+cleaned_data$season <- case_when(
+  cleaned_data$month %in% c(12, 1, 2) ~ "Winter",
+  cleaned_data$month %in% c(3, 4, 5) ~ "Spring",
+  cleaned_data$month %in% c(6, 7, 8) ~ "Summer",
+  cleaned_data$month %in% c(9, 10, 11) ~ "Fall"
+)
 
-# Merge the two dataset
-cleaned_data <- cleaned_data |>
-  left_join(causative_counts, by = "causative_agent_1")
+# Create a dataset which has count each causative agent
+count_data <- cleaned_data %>%
+  group_by(causative_agent_1, season, month, outbreak_setting) %>%
+  summarise(outbreak_count = n(), .groups = "drop")
 
 
 #### Save data ####
-write_parquet(x = cleaned_data, sink = "data/02-analysis_data/analysis_data_cleaned.parquet")
+write_parquet(x = count_data, sink = "data/02-analysis_data/analysis_data.parquet")
 
 

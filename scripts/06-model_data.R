@@ -14,25 +14,13 @@ library(rstanarm)
 library(ggplot2)
 
 #### Read data ####
-data <- read_parquet("data/02-analysis_data/analysis_data_cleaned.parquet")
+count_data <- read_parquet("data/02-analysis_data/analysis_data.parquet")
 
 ### Model data ####
 # Use Poisson Model
 library(dplyr)
 
-# Transfer count of date to month 
-data$month <- as.numeric(format(as.Date(data$date_outbreak_began), "%m"))
-data$season <- case_when(
-  data$month %in% c(12, 1, 2) ~ "Winter",
-  data$month %in% c(3, 4, 5) ~ "Spring",
-  data$month %in% c(6, 7, 8) ~ "Summer",
-  data$month %in% c(9, 10, 11) ~ "Fall"
-)
 
-# Create a dataset which has count each causative agent
-count_data <- data %>%
-  group_by(causative_agent_1, season, month, outbreak_setting) %>%
-  summarise(outbreak_count = n(), .groups = "drop")
 
 # Poisson Model creation
 poisson_model <- glm(outbreak_count ~ causative_agent_1 + season, 
@@ -75,6 +63,10 @@ poisson_interaction_season_model <- glm(outbreak_count ~ causative_agent_1 * sea
                                  data = count_data)
 summary(poisson_interaction_season_model)
 
+poisson_final <- glm(outbreak_count ~ causative_agent_1 * season + month + outbreak_setting, 
+                           family = poisson(link = "log"), data = count_data)
+summary(poisson_final)
+
 # Choose the final model and plot the interaction poisson model 
 count_data$predicted <- predict(poisson_season_time, type = "response")
 
@@ -84,6 +76,9 @@ ggplot(count_data, aes(x = month, y = predicted, color = causative_agent_1)) +
   labs(title = "Predicted Outbreak Frequency by Pathogen and Month",
        x = "Month", y = "Predicted Outbreak Count") +
   geom_smooth(method = "loess", se = FALSE)
+
+
+
 
 
 #### Save model ####
