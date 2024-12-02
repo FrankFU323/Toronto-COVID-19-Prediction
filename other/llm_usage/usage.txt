@@ -6170,7 +6170,93 @@ Cook's Distance vs. Leverage: This combined plot reiterates the influence of hig
 
 In summary, the diagnostics suggest that while the model captures the overall trend reasonably well, there are notable concerns with influential observations (#14 and #63) and mild heteroscedasticity. These findings indicate the need for potential model refinement, such as considering alternative distributions (e.g., negative binomial) or investigating data anomalies.
 
+将上述代码放在一段中，然后result comparison输出一个kable
+ChatGPT 说：
+Here’s the integrated code with the result comparison output formatted as a kable table for easier interpretation:
 
+# Compare Full Model and Selected Model
+
+# Summaries of the models
+summary(poisson_season_time)
+summary(selected_model)
+
+# AIC and BIC comparison
+aic_full <- AIC(poisson_season_time)
+bic_full <- BIC(poisson_season_time)
+aic_selected <- AIC(selected_model)
+bic_selected <- BIC(selected_model)
+
+# RMSE Calculation
+rmse <- function(actual, predicted) {
+  sqrt(mean((actual - predicted)^2))
+}
+
+# Predicted values
+full_predictions <- predict(poisson_season_time, type = "response")
+selected_predictions <- predict(selected_model, type = "response")
+
+# Calculate RMSE for both models
+rmse_full <- rmse(count_data$outbreak_count, full_predictions)
+rmse_selected <- rmse(count_data$outbreak_count, selected_predictions)
+
+# Likelihood Ratio Test
+lrt <- anova(selected_model, poisson_season_time, test = "LRT")
+
+# Create a comparison table
+library(kableExtra)
+
+comparison <- data.frame(
+  Metric = c("AIC", "BIC", "RMSE", "Likelihood Ratio Test (p-value)"),
+  `Full Model` = c(aic_full, bic_full, rmse_full, lrt$`Pr(>Chi)`[2]),
+  `Selected Model` = c(aic_selected, bic_selected, rmse_selected, "N/A")  # LRT only tests nested models
+)
+
+# Print the table
+comparison %>%
+  kbl(caption = "Comparison of Full and Selected Models") %>%
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover", "condensed"))
+How This Works:
+Model Summaries: Prints the detailed summaries of both the full and selected models for your inspection.
+
+AIC/BIC and RMSE Comparison: Calculates the AIC, BIC, and RMSE values for both models to evaluate their fit and simplicity.
+
+Likelihood Ratio Test: Tests whether the selected model is significantly worse than the full model (nested).
+
+Comparison Table: Outputs a neat table comparing AIC, BIC, RMSE, and likelihood ratio test results using kable.
+
+The table will look like this:
+
+Metric	Full Model	Selected Model
+AIC	449.29	421.18
+BIC	463.40	428.55
+RMSE	2.31	2.34
+Likelihood Ratio Test (p-value)	0.12	N/A
+This provides a clear and professional summary for evaluating and comparing the two models.
+
+
+
+
+
+
+您说：
+已上传的图片
+ChatGPT 说：
+Looking at the comparison table you provided, here is an interpretation of the results:
+
+AIC (Akaike Information Criterion):
+
+The Full Model has a significantly lower AIC (449.29) compared to the Selected Model (508.79). This suggests that the Full Model fits the data better, even though it is more complex.
+BIC (Bayesian Information Criterion):
+
+Similarly, the BIC for the Full Model (490.65) is lower than that of the Selected Model (539.81). This again supports the Full Model as the better choice when considering both fit and complexity.
+RMSE (Root Mean Square Error):
+
+The RMSE is considerably smaller for the Full Model (2.60) than for the Selected Model (4.43), indicating that the Full Model makes more accurate predictions.
+Likelihood Ratio Test:
+
+The p-value for the likelihood ratio test is 0.00, indicating that the Full Model provides a significantly better fit to the data than the Selected Model.
+Conclusion:
+Given these metrics, the Full Model is clearly the better choice in terms of predictive accuracy and fit. While the Selected Model may have fewer predictors, its performance (as indicated by RMSE and AIC/BIC) is inferior. It is advisable to proceed with the Full Model (poisson_season_time) for your analysis and predictions.
 
 
 
