@@ -81,30 +81,45 @@ data <- read_parquet(here::here("data/02-analysis_data/analysis_data.parquet"))
 #| fig-cap: Outbreak Counts by Pathogen and Season
 #| echo: false
 
-library(ggplot2)
-library(dplyr)
-
 # Summarize the data for plotting
 plot_data <- data %>%
   group_by(causative_agent_1, season) %>% 
   summarise(total_outbreaks = sum(outbreak_count), .groups = "drop")
 
 # Create the bar plot
+# Ensure the `season` variable is ordered as Spring → Summer → Fall → Winter
+plot_data$season <- factor(plot_data$season, levels = c("Spring", "Summer", "Fall", "Winter"))
+
 ggplot(plot_data, aes(x = causative_agent_1, y = total_outbreaks, fill = season)) +
-  geom_bar(stat = "identity", position = "dodge") +
+  geom_bar(stat = "identity", position = "dodge", color = "black") +  
   geom_text(aes(label = total_outbreaks),
-    position = position_dodge(width = 0.9),
-    vjust = -0.5, size = 3
-  ) + # Annotate with outbreak counts
+            position = position_dodge(width = 0.9),
+            vjust = -0.5, size = 3) + 
+  scale_fill_manual(
+    values = c(
+      "Spring" = "olivedrab3",
+      "Summer" = "orangered", 
+      "Fall" = "darkorange", 
+      "Winter" = "#64B5F6" 
+    )
+  ) + 
   labs(
     x = "Pathogen",
     y = "Total Outbreak Count",
     fill = "Season"
   ) +
-  theme_minimal() +
+  theme_minimal(base_size = 14) +
   theme(
-    axis.text.x = element_text(angle = 60, hjust = 1)
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
+    axis.text.x = element_text(angle = 0, hjust = 0.5, size = 12), 
+    axis.text.y = element_text(size = 12), 
+    axis.title.x = element_text(face = "bold"), 
+    axis.title.y = element_text(face = "bold"), 
+    legend.title = element_text(face = "bold"), 
+    legend.text = element_text(size = 12) 
   )
+
+
 ```
 
 ## Predictor variables
@@ -120,14 +135,28 @@ The `causative_agent_1` variable represents the primary pathogen responsible for
 #| warning: false
 
 ggplot(data, aes(x = causative_agent_1, fill = causative_agent_1)) +
-  geom_bar() +
-  geom_text(stat = "count", aes(label = ..count..), vjust = -0.5) +
+  geom_bar(stat = "count", position = "dodge", color = "black", alpha = 0.85) +  
+  geom_text(stat = "count", aes(label = ..count..), vjust = -0.5, size = 4, fontface = "bold") + 
+  scale_fill_manual(values = c(
+    "COVID-19" = "olivedrab3", 
+    "Coronavirus*" = "darkorange", 
+    "Rhinovirus" = "#64B5F6", 
+    "Parainfluenza" = "orangered" 
+  )) +  
   labs(
     x = "Pathogen",
-    y = "Total Count"
+    y = "Total Count",
+    fill = "Pathogen Type"
   ) +
-  theme_minimal() +
-  theme(legend.position = "none")
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "none", 
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16), 
+    axis.text.x = element_text(angle = 0, hjust = 0.5, size = 12), 
+    axis.text.y = element_text(size = 12), 
+    axis.title.x = element_text(face = "bold"),
+    axis.title.y = element_text(face = "bold") 
+  )
 ```
 
 ### Season
@@ -138,36 +167,73 @@ The `season` variable captures the seasonal variability in outbreaks, categorizi
 #| label: fig-season
 #| fig-cap: Outbreak Counts by Season
 #| echo: false
+#| warning: false
 
+# Ensure the `season` variable is ordered as Spring → Summer → Fall → Winter
+data$season <- factor(data$season, levels = c("Spring", "Summer", "Fall", "Winter"))
+
+# Create the plot
 ggplot(data, aes(x = season, fill = season)) +
-  geom_bar() +
-  geom_text(stat = "count", aes(label = ..count..), vjust = -0.5) +
+  geom_bar(color = "black", alpha = 0.9) + 
+  geom_text(stat = "count", aes(label = ..count..), vjust = -0.5, size = 4, fontface = "bold") + 
+  scale_fill_manual(values = c(
+    "Spring" = "olivedrab3",
+    "Summer" = "orangered", 
+    "Fall" = "darkorange",
+    "Winter" = "#64B5F6"  
+  )) + 
   labs(
     x = "Season",
-    y = "Total Count"
+    y = "Total Count",
+    fill = "Season"
   ) +
-  theme_minimal() +
-  theme(legend.position = "none")
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16), 
+    axis.text.x = element_text(angle = 0, hjust = 0.5, size = 12), 
+    axis.text.y = element_text(size = 12), 
+    axis.title.x = element_text(face = "bold"), 
+    axis.title.y = element_text(face = "bold"),
+    panel.grid.major = element_line(color = "gray80", size = 0.5), 
+    legend.position = "none" 
+  )
+
 ```
+
 ### Month
 
-The `month` variable provides granular temporal information about outbreaks throughout the year. As illustrated in @fig-month, May (12 events) and October (11 events) are the peak months for outbreaks, while most other months have relatively stable counts of 8–9 events. Monthly variation may stem from factors such as pathogen transmission cycles, seasonal transitions, or changes in human behaviors, such as increased social interactions during specific times of the year. This predictor allows for a finer temporal resolution in understanding outbreak dynamics and facilitates timely interventions, such as intensifying infection control measures in May and October. Month-level analysis also supports adaptive responses to temporal drivers that impact outbreak frequencies.
+The `month` variable provides granular temporal information about outbreaks throughout the year until now. As illustrated in @fig-month, May (12 events) and October (11 events) are the peak months for outbreaks, while most other months have relatively stable counts of 8–9 events. Monthly variation may stem from factors such as pathogen transmission cycles, seasonal transitions, or changes in human behaviors, such as increased social interactions during specific times of the year. This predictor allows for a finer temporal resolution in understanding outbreak dynamics and facilitates timely interventions, such as intensifying infection control measures in May and October. Month-level analysis also supports adaptive responses to temporal drivers that impact outbreak frequencies.
 
 ```{r, fig.pos= 'H', fig.width=10, fig.height=5}
 #| label: fig-month
 #| fig-cap: Monthly Outbreak Trends
 #| echo: false
 
-ggplot(data, aes(x = factor(month, levels = 1:12), fill = factor(month))) +
-  geom_bar() +
-  geom_text(stat = "count", aes(label = ..count..), vjust = -0.5) +
-  scale_x_discrete(labels = month.abb) +
+# Generate the plot
+ggplot(data, aes(x = factor(month, levels = 1:11), fill = factor(month))) +
+  geom_bar(color = "black", alpha = 0.9) +
+  geom_text(stat = "count", aes(label = ..count..), vjust = -0.5, size = 4, fontface = "bold") +  
+  scale_x_discrete(labels = month.abb) + 
+  scale_fill_manual(values = c(
+     "#4575b4", "#74add1", "#abd9e9",
+     "#fee090", "#fdae61", "#f46d43",
+     "#f46d43", "#fdae61", "#fee090",
+     "#abd9e9", "#74add1"            
+  )) +
   labs(
     x = "Month",
     y = "Total Count"
   ) +
-  theme_minimal() +
-  theme(legend.position = "none")
+  theme_minimal(base_size = 14) + 
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16), 
+    axis.text.x = element_text(angle = 0, hjust = 0.5, size = 12),
+    axis.text.y = element_text(size = 12), 
+    axis.title.x = element_text(face = "bold"), 
+    axis.title.y = element_text(face = "bold"), 
+    panel.grid.major = element_line(color = "gray80", size = 0.5), 
+    legend.position = "none"
+  )
 ```
 
 ### Outbreak Setting
@@ -179,17 +245,24 @@ The `outbreak_setting` variable reflects the specific environments where outbrea
 #| fig-cap: Outbreak Count by Setting
 #| echo: false
 
-
 ggplot(data, aes(x = outbreak_setting, fill = outbreak_setting)) +
-  geom_bar() +
-  geom_text(stat = "count", aes(label = ..count..), vjust = -0.5) +
+  geom_bar(color = "black", alpha = 0.9) + 
+  geom_text(stat = "count", aes(label = ..count..), vjust = -0.5, size = 4, fontface = "bold") + 
+  scale_fill_brewer(palette = "Set2") +
   labs(
     x = "Setting",
     y = "Total Count"
   ) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  theme(legend.position = "none")
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
+    axis.text.x = element_text(angle = 15, hjust = 1, size = 12),
+    axis.text.y = element_text(size = 12),
+    axis.title.x = element_text(face = "bold"), 
+    axis.title.y = element_text(face = "bold"), 
+    panel.grid.major = element_line(color = "gray90", size = 0.5), 
+    legend.position = "none" 
+  )
 ```
 
 # Model {#sec-model}
@@ -580,47 +653,67 @@ The dataset includes all reported outbreaks from Toronto's healthcare institutio
 
 **Reporting Process and Data Collection**
 
-Healthcare institutions identify and report outbreaks based on clinical or laboratory confirmation of cases. Reports are submitted to Toronto Public Health and updated weekly to provide real-time insights @OntarioMinistry2024. Smaller outbreaks or delayed diagnoses may be underreported, introducing gaps in the dataset. Variability in reporting practices across institution types, such as more frequent reporting by long-term care homes compared to transitional care centers, may also influence the representativeness of the dataset.
+Outbreaks are identified and reported by healthcare institutions based on clinical symptoms or laboratory-confirmed cases. These reports are then submitted to Toronto Public Health, with updates provided weekly to maintain real-time relevance @OntarioMinistry2024. However, smaller outbreaks or those diagnosed late may be underreported, leading to data gaps. Variability in reporting practices across institution types further complicates data consistency; for instance, long-term care homes may report more frequently due to heightened surveillance requirements, whereas transitional care centers might report less rigorously.
 
 **Observational Nature of the Data**
 
-This dataset relies on observational data collected through mandatory administrative reporting rather than experimental design or sampling. As such, the dataset ensures extensive coverage across a variety of healthcare settings. However, inconsistencies in institutional reporting practices could introduce biases, with certain settings, such as retirement homes, potentially reporting more consistently due to heightened surveillance measures compared to other care facilities.
+This dataset is observational, relying on mandatory administrative reporting rather than experimental sampling or randomized control. Its strength lies in the extensive coverage across diverse healthcare settings. However, inconsistencies in reporting practices between institutions can introduce biases. For example, retirement homes may demonstrate heightened vigilance in outbreak reporting compared to hospitals, potentially skewing the dataset's representation of outbreak frequencies.
+
+Additionally, the observational nature of the data does not account for unmeasured confounders such as population density, healthcare access, or staff-to-patient ratios, which may influence outbreak rates. Temporal gaps may also arise from unreported or delayed diagnoses, particularly during holidays or periods of resource strain. Unlike randomized datasets, observational data lacks randomization, leading to potential selection biases as institutions with better reporting practices are more prominently represented. Despite these limitations, this dataset provides invaluable insights into naturally occurring outbreak trends, enabling analyses that reflect the complexities of real-world healthcare settings.
 
 **Strengths and Limitations of the Dataset**
 
-The dataset provides a robust longitudinal view of outbreaks in Toronto's healthcare settings, capturing detailed variables such as outbreak duration, pathogen type, and affected settings. This granularity allows for nuanced analysis of temporal and spatial patterns of infection. However, the reliance on institutional reporting introduces some limitations. Smaller outbreaks or infections resolved without intervention may be omitted, leading to underreported outbreak frequencies. Additionally, human and systematic errors—such as misdiagnoses or delays in reporting—may compromise data accuracy.
+The dataset offers notable strengths that support its use for analyzing outbreak patterns. Comprehensive temporal coverage, with detailed outbreak timelines, facilitates longitudinal analyses to identify trends such as seasonal or monthly peaks. Granular data, including variables like outbreak duration, pathogen type, and affected settings, allows for nuanced exploration of interactions between key factors. Additionally, the dataset's foundation in legally mandated reporting ensures broad coverage of significant outbreaks, reducing the likelihood of selective underreporting. Its utility for public health planning is enhanced by these attributes, supporting targeted interventions such as vaccination campaigns during high-risk periods.
+
+However, the dataset is not without limitations. Cases involving mild infections managed outside healthcare settings or resolved without public health involvement are often excluded, leading to underreported outbreak frequencies. Inconsistent reporting practices across institutions further complicate analyses, as long-term care homes may report more consistently than hospitals or transitional care facilities. Delays in confirming or reporting outbreaks also create potential data gaps. Furthermore, errors in diagnosis or administrative reporting can introduce inaccuracies, while the dataset’s geographic scope is limited to Toronto, restricting the generalizability of findings to other regions.
 
 **Reporting Standards and Data Quality**
 
-To ensure uniformity, reporting adheres to standardized protocols under the HPPA. Each outbreak entry includes key variables such as pathogen type, outbreak duration, and institution type. However, potential sources of variability remain, such as differing diagnostic accuracy or delays in reporting due to administrative burdens. Smaller outbreaks, particularly those that resolve quickly, may not be fully captured.
+The dataset adheres to rigorous reporting standards mandated by the HPPA @OntarioHealthAct1990, ensuring uniformity in data collection across institutions. Outbreaks are defined using standardized criteria, such as an increase in infection rates above expected baselines within a specific ward or institution. This ensures consistency in reported data. Institutions work closely with Toronto Public Health (TPH) to verify and classify outbreaks, further enhancing the dataset's reliability.
+
+Real-time updates are a key strength, allowing for near-immediate tracking of outbreak trends. However, administrative lags or delays in outbreak confirmation may temporarily affect data completeness. The granularity of the data, including variables like outbreak start and end dates, pathogen type, and institution settings, enables detailed analyses but increases the risk of errors during data entry, especially in high-pressure environments like hospitals. Differences in diagnostic resources across institutions can also lead to variability, with smaller or resource-limited facilities potentially underreporting certain pathogens. Furthermore, institutions with robust surveillance systems may report more frequently, creating an overrepresentation of outbreaks in these settings.
+
+Despite these challenges, the dataset provides a reliable foundation for analyzing healthcare-associated outbreaks. By balancing its strengths—such as high granularity and comprehensive coverage—against its limitations, it remains a valuable tool for informing public health policy and outbreak preparedness strategies.
 
 **Connection to Literature and Data Applications**
 
-This dataset aligns with broader efforts to monitor and mitigate healthcare-associated infections, as discussed in the 2023-2024 Public Health Plan @Canada2024. The outbreak reporting framework complements international standards, such as the World Health Organization's definitions for disease transmission @citewho. These insights reinforce the global importance of effective outbreak surveillance and reporting to manage healthcare-associated infections.
+The dataset supports broader public health efforts to manage and mitigate healthcare-associated infections, aligning with the objectives outlined in the 2023-2024 Canadian Public Health Plan @Canada2024. The outbreak monitoring framework is consistent with international practices, such as the World Health Organization's guidelines for disease surveillance and transmission @citewho. By linking local data collection to global health standards, this dataset highlights the critical role of systematic outbreak reporting in improving public health outcomes and guiding evidence-based policy decisions.
 
 ## More details about plot {#sec-plot-details}
 
 The @fig-outbreakcount showcases the distribution of outbreak counts, revealing a heavily skewed pattern where most instances report lower outbreak counts. The majority of the data lies in the range of 0–2 outbreaks, indicating that many facilities or contexts experienced minimal disruptions. As the outbreak count increases, the frequency declines sharply, highlighting the rarity of high-count outbreaks. Notably, there are a few outlier cases, such as counts above 30 or even 50, which likely correspond to specific high-risk pathogens (e.g., COVID-19) or settings like long-term care homes. These extreme cases underline the need for targeted interventions in high-risk contexts.
 
 In contrast, the @fig-outbreakcount aggregates all data without considering the influence of key predictors like pathogens or seasons. While it gives a general distribution of outbreak counts, it lacks the depth needed to examine contextual factors that affect outbreak patterns. This makes it less suitable for understanding the drivers of variation in outbreak frequencies across multiple factors. By visualizing outbreaks grouped by pathogen and season in @fig-count, we can identify trends or anomalies, such as seasonal peaks for specific pathogens, which are crucial for drawing actionable conclusions and targeting interventions.
+
 ```{r, fig.pos= 'H', fig.width=10, fig.height=6}
 #| label: fig-outbreakcount
 #| fig-cap: Distribution of outbreak Count
 #| echo: false
 
+library(ggplot2)
+
 ggplot(data, aes(x = outbreak_count)) +
-  geom_bar(fill = "steelblue", color = "black", alpha = 0.8) +
+  geom_bar(aes(fill = ..count..), color = "black", alpha = 0.9, stat = "count") +
+  geom_text(stat = "count", aes(label = ..count..), vjust = -0.5, size = 4, fontface = "bold") +
+  scale_fill_gradient(low = "skyblue", high = "steelblue") + 
   labs(
+    title = "Distribution of Outbreak Counts",
     x = "Outbreak Count",
-    y = "Frequency"
-  ) +  # Add labels and title
+    y = "Frequency",
+    fill = "Frequency"  # Add fill legend for gradient
+  ) +
   theme_minimal(base_size = 14) +
   theme(
-    plot.title = element_text(hjust = 0.5, face = "bold"),
-    axis.title.x = element_text(face = "bold"),
-    axis.title.y = element_text(face = "bold")
-  ) + 
-  geom_text(stat = "count", aes(label = ..count..), vjust = -0.5, size = 4)
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
+    axis.text.x = element_text(size = 12, face = "bold"), 
+    axis.text.y = element_text(size = 12, face = "bold"), 
+    axis.title.x = element_text(face = "bold", size = 14), 
+    axis.title.y = element_text(face = "bold", size = 14), 
+    panel.grid.major = element_line(color = "gray85", size = 0.5), 
+    panel.grid.minor = element_blank(),
+    legend.position = "top", 
+    legend.title = element_text(face = "bold")
+  )
 
 ```
 
