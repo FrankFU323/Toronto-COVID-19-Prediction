@@ -46,13 +46,13 @@ This study highlights the necessity of incorporating seasonal changes into outbr
 
 The data for this study was sourced from Open Data Toronto and downloaded using the @citeopendatapkg package. It consists of 846 observations from 2024 across 10 variables.
 
-Our analysis was conducted using the statistical programming language R [@citeR], leveraging a suite of packages to facilitate efficient data manipulation, modeling, and visualization. Data cleaning, transformation, and visualization were handled using `tidyverse` @tidyverse and `dplyr` @dplyr. The core analysis used Poisson regression models to explore relationships between outbreak counts and key variables, including pathogen type, seasonal variation, and outbreak settings. These models were implemented using the flexible framework offered by `rstanarm` @rstanarm for model development and extensions. Efficient data integration was achieved through arrow @arrow, and modeling workflows were supported using `modelr` @modelr within the tidyverse framework. Model summaries were generated using `modelsummary` @modelsummary, while `ggplot2` @ggplot2 was employed for creating visualizations. Enhanced table outputs were produced with `kableExtra` @kableExtra, and dynamic report generation was performed with `knitr` @citeknitr. File management, including reading parquet files, was streamlined with `here` @citehere.
+Our analysis was conducted using the statistical programming language R [@citeR], leveraging a suite of packages to facilitate efficient data manipulation, modeling, and visualization. Data cleaning, transformation, and visualization were handled using `tidyverse` @tidyverse and `dplyr` @dplyr. The core analysis used Poisson regression models to explore relationships between outbreak counts and key variables, including pathogen type, seasonal variation, and outbreak settings. These models were implemented using the flexible framework offered by `rstanarm` @rstanarm for model development and extensions. Efficient data integration was achieved through `arrow` @arrow, and modeling workflows were supported using `modelr` @modelr within the tidyverse framework. Model summaries were generated using `modelsummary` @modelsummary, while `ggplot2` @ggplot2 was employed for creating visualizations. Enhanced table outputs were produced with `kableExtra` @kableExtra, and dynamic report generation was performed with `knitr` @citeknitr. File management, including reading parquet files, was streamlined with `here` @citehere.
 
 The analysis framework followed the structured approach provided by @citeRohan, ensuring consistency and clarity in integrating data preparation and modeling workflows. Additionally, the critique and guidelines outlined in @tellingstories informed our presentation of the data and results, emphasizing clarity and coherence.
 
 ## Data cleaning
 
-The cleaning process for the dataset focused on retaining key variables relevant to respiratory outbreaks in Toronto healthcare institutions. Initially, redundant or irrelevant columns were removed, and the dataset was narrowed to include only `institution_address`, `outbreak_setting`, `type_of_outbreak`, `causative_agent_1`, `date_outbreak_began`, and `active` variables. Outbreaks were filtered to focus on respiratory pathogens of interest, such as "COVID-19," "Coronavirus*," "Rhinovirus," and "Parainfluenza." The season variable was derived from the date_outbreak_began column by mapping months to their respective seasons like December-February as Winter. Invalid or missing data were addressed by removing incomplete rows or invalid entries, ensuring data consistency. These steps ensured that the dataset was streamlined for meaningful analysis while retaining critical details.
+The cleaning process for the dataset focused on retaining key variables relevant to respiratory outbreaks in Toronto healthcare institutions. Initially, redundant or irrelevant columns were removed, and the dataset was narrowed to include only `institution_address`, `outbreak_setting`, `type_of_outbreak`, `causative_agent_1`, `date_outbreak_began`, and `active` variables. Outbreaks were filtered to focus on respiratory pathogens of interest, such as "COVID-19", "Coronavirus*", "Rhinovirus", and "Parainfluenza". The season variable was derived from the `date_outbreak_began` column by mapping months to their respective seasons like December-February as Winter. Invalid or missing data were addressed by removing incomplete rows or invalid entries, ensuring data consistency. These steps ensured that the dataset was streamlined for meaningful analysis while retaining critical details.
 
 The creation of the `count_data` dataset involved aggregating the cleaned data to prepare it for statistical modeling and visualization. Outbreak events were grouped by `causative_agent_1`, `season`, `month`, and `outbreak_setting`, and the `outbreak_count` variable was calculated as the total number of outbreaks for each combination of these factors. This aggregation provided a structured summary of outbreak frequency, enabling comparisons between pathogens, seasonal trends, and healthcare settings. By summarizing the data, `count_data` served as the foundation for constructing Poisson regression models and generating meaningful visualizations to explore outbreak dynamics.
 
@@ -86,12 +86,12 @@ library(dplyr)
 
 # Summarize the data for plotting
 plot_data <- data %>%
-  group_by(causative_agent_1, season) %>% # Group by agent and season for detailed view
+  group_by(causative_agent_1, season) %>% 
   summarise(total_outbreaks = sum(outbreak_count), .groups = "drop")
 
 # Create the bar plot
 ggplot(plot_data, aes(x = causative_agent_1, y = total_outbreaks, fill = season)) +
-  geom_bar(stat = "identity", position = "dodge") + # Dodge for season-wise bars
+  geom_bar(stat = "identity", position = "dodge") +
   geom_text(aes(label = total_outbreaks),
     position = position_dodge(width = 0.9),
     vjust = -0.5, size = 3
@@ -103,7 +103,7 @@ ggplot(plot_data, aes(x = causative_agent_1, y = total_outbreaks, fill = season)
   ) +
   theme_minimal() +
   theme(
-    axis.text.x = element_text(angle = 60, hjust = 1) # Rotate x-axis labels
+    axis.text.x = element_text(angle = 60, hjust = 1)
   )
 ```
 
@@ -286,7 +286,7 @@ lrt <- anova(reduced_model, poisson_season_time, test = "LRT")
 comparison <- data.frame(
   Metric = c("AIC", "BIC", "RMSE", "Likelihood Ratio Test (p-value)"),
   `Full Model` = c(aic_full, bic_full, rmse_full, lrt$`Pr(>Chi)`[2]),
-  `Reduced Model` = c(aic_reduced, bic_reduced, rmse_reduced, "N/A") # LRT only tests nested models
+  `Reduced Model` = c(aic_reduced, bic_reduced, rmse_reduced, "N/A") 
 )
 
 # Print the table
@@ -609,16 +609,16 @@ In contrast, the @fig-outbreakcount aggregates all data without considering the 
 #| echo: false
 
 ggplot(data, aes(x = outbreak_count)) +
-  geom_bar(fill = "steelblue", color = "black", alpha = 0.8) +  # Add color and transparency
+  geom_bar(fill = "steelblue", color = "black", alpha = 0.8) +
   labs(
     x = "Outbreak Count",
     y = "Frequency"
   ) +  # Add labels and title
-  theme_minimal(base_size = 14) +  # Use a clean theme with larger text
+  theme_minimal(base_size = 14) +
   theme(
-    plot.title = element_text(hjust = 0.5, face = "bold"),  # Center and bold the title
-    axis.title.x = element_text(face = "bold"),  # Bold x-axis label
-    axis.title.y = element_text(face = "bold")   # Bold y-axis label
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.title.x = element_text(face = "bold"),
+    axis.title.y = element_text(face = "bold")
   ) + 
   geom_text(stat = "count", aes(label = ..count..), vjust = -0.5, size = 4)
 
