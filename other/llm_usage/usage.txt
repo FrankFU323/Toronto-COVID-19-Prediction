@@ -6258,7 +6258,101 @@ The p-value for the likelihood ratio test is 0.00, indicating that the Full Mode
 Conclusion:
 Given these metrics, the Full Model is clearly the better choice in terms of predictive accuracy and fit. While the Selected Model may have fewer predictors, its performance (as indicated by RMSE and AIC/BIC) is inferior. It is advisable to proceed with the Full Model (poisson_season_time) for your analysis and predictions.
 
+how to make the model api for poisson in plumber script
+ChatGPT 说：
+ChatGPT
+To create a Plumber API for a Poisson regression model, follow the steps below. The script will load the Poisson model, define the API endpoints, and use user inputs to predict outbreak counts based on the model.
 
+Plumber Script for Poisson Model
+Save the Trained Model
+Ensure your trained Poisson regression model is saved as an .rds file (e.g., poisson_model.rds).
+R
+复制代码
+# Save your model
+saveRDS(poisson_season_time, "poisson_model.rds")
+Plumber Script
+Create a file, e.g., plumber.R, with the following content:
+R
+复制代码
+# Load required libraries
+library(plumber)
+
+# Load the saved Poisson model
+model <- readRDS("poisson_model.rds")
+
+# API version metadata
+#* @apiTitle Poisson Model API
+#* @apiVersion 1.0.0
+
+# API endpoint for predicting outbreak counts
+#* Predict outbreak counts based on input variables
+#* @param causative_agent_1 (string) Pathogen type: COVID-19, Rhinovirus, etc.
+#* @param month (integer) Month (1-12).
+#* @param season (string) Season: Winter, Spring, Summer, Fall.
+#* @param outbreak_setting (string) Setting: LTCH, Hospital-Acute Care, etc.
+#* @get /predict
+function(causative_agent_1 = "COVID-19", month = 1, season = "Winter", outbreak_setting = "LTCH") {
+  # Prepare the input as a data frame
+  input_data <- data.frame(
+    causative_agent_1 = as.character(causative_agent_1),
+    month = as.integer(month),
+    season = as.character(season),
+    outbreak_setting = as.character(outbreak_setting),
+    stringsAsFactors = TRUE
+  )
+  
+  # Ensure factors match the training data
+  input_data$causative_agent_1 <- factor(input_data$causative_agent_1, levels = levels(model$model$causative_agent_1))
+  input_data$season <- factor(input_data$season, levels = levels(model$model$season))
+  input_data$outbreak_setting <- factor(input_data$outbreak_setting, levels = levels(model$model$outbreak_setting))
+  
+  # Predict outbreak count
+  prediction <- predict(model, newdata = input_data, type = "response")
+  
+  # Return the result as a JSON response
+  list(
+    causative_agent_1 = causative_agent_1,
+    month = month,
+    season = season,
+    outbreak_setting = outbreak_setting,
+    predicted_outbreak_count = prediction
+  )
+}
+Run the API
+Save the script above as plumber.R and use the following R command to start the API server:
+R
+复制代码
+library(plumber)
+pr <- plumb("plumber.R")
+pr$run(port = 8000)
+API Workflow
+Input Parameters:
+
+causative_agent_1: e.g., "COVID-19"
+month: Numeric (1-12)
+season: e.g., "Winter"
+outbreak_setting: e.g., "LTCH"
+Response:
+The API will return a JSON response with the predicted outbreak count.
+
+Example Response:
+
+json
+复制代码
+{
+  "causative_agent_1": "COVID-19",
+  "month": 1,
+  "season": "Winter",
+  "outbreak_setting": "LTCH",
+  "predicted_outbreak_count": 25.73
+}
+Testing the API
+Use tools like Postman, cURL, or a browser to send a GET request to the API endpoint:
+
+bash
+复制代码
+curl "http://localhost:8000/predict?causative_agent_1=COVID-19&month=1&season=Winter&outbreak_setting=LTCH"
+This will return the predicted outbreak count based on the input variables.
 
 
 
