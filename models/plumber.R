@@ -10,17 +10,16 @@ version_number <- "0.0.1"
 
 # Define the variables
 variables <- list(
-  causative_agent_1 = "The causative agent -- COVID-19, Rhinovirus, Parainfluenza and Coronavirus",
-  month = "The month of the year, numeric (1 to 12).",
-  season = "The season of the year, Spring, Summer, Autumn and Winter.",
-  outbreak_setting = "The specific environments where outbreaks occur includes LTCH, Retirement Home, 
-  Hospital-Acute Care, Hospital-Chronic Care, Hospital-Psychiatric and Transitional Care." 
+  causative_agent_1 = "The causative agent responsible for the outbreak. Options include: COVID-19, Rhinovirus, Parainfluenza, and Coronavirus.",
+  month = "The numeric representation of the month (1 for January to 12 for December).",
+  season = "The season of the year. Options are: Spring, Summer, Autumn, and Winter.",
+  outbreak_setting = "The specific environments where outbreaks occur. Includes: LTCH, Retirement Home, Hospital-Acute Care, Hospital-Chronic Care, Hospital-Psychiatric, and Transitional Care."
 )
 
-#* @param causative_agent_1 The causative agent -- COVID-19, Rhinovirus, Parainfluenza and Coronavirus
-#* @param season The season of the year, Spring, Summer, Autumn and Winter.
-#* @param month The month of the year, numeric (1 to 12).
-#* @param outbreak_setting The specific environments where outbreaks occur includes LTCH, Retirement Home, Hospital-Acute Care, Hospital-Chronic Care, Hospital-Psychiatric and Transitional Care.
+#* @param causative_agent_1 The causative agent (e.g., COVID-19, Rhinovirus, Parainfluenza, or Coronavirus).
+#* @param season The season of the year (e.g., Spring, Summer, Autumn, or Winter).
+#* @param month The numeric month of the year (1 to 12).
+#* @param outbreak_setting The specific environment where outbreaks occur (e.g., LTCH, Retirement Home, Hospital-Acute Care, Hospital-Chronic Care, Hospital-Psychiatric and Transitional Care.).
 #* @get /predict_outbreak_count
 predict_outbreak_count <- function(causative_agent_1 = "COVID-19"
                                    , outbreak_setting = "LTCH", month = 11, season = "Summer") {
